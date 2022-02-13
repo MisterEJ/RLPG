@@ -59,7 +59,7 @@ public class Window {
             glfwGetWindowSize(window, pWidth, pHeight);
 
             GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-            assert vidMode == null : "Cant get GLFWVideoMode";
+            assert vidMode != null : "Cant get GLFWVideoMode";
 
             glfwSetWindowPos(window, (vidMode.width() - pWidth.get(0)) / 2, (vidMode.height() - pHeight.get(0)) / 2);
         }

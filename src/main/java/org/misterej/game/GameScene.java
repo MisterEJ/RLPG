@@ -1,8 +1,11 @@
 package org.misterej.game;
 
+import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
+import org.misterej.engine.Camera;
 import org.misterej.engine.Scene;
+import org.misterej.engine.renderer.Shader;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -37,15 +40,15 @@ public class GameScene extends Scene {
             "    gl_Position = vec4(aPos, 1.0);\n" +
             "}";
 
-    private int vertexID, fragmentID, shaderProgram;
+    private Shader defaultShader;
     private int vaoID, vboID, eboID;
 
     private float[] vertexArray = {
-            //position              Color
-             0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f, 1.0f,     // 0 // BOTTOM RIGHT
-            -0.5f,  0.5f, 0.0f,     0.0f, 1.0f, 0.0f, 1.0f,     // 1 // TOP LEFT
-             0.5f,  0.5f, 0.0f,     0.0f, 0.0f, 1.0f, 1.0f,     // 2 // TOP RIGHT
-            -0.5f, -0.5f, 0.0f,     1.0f, 1.0f, 0.0f, 1.0f,      // 3 // BOTTOM LEFT
+            //position                  Color                           UV
+             100.0f, 0.0f,   0.0f,      1.0f, 0.0f, 0.0f, 1.0f,         1, 0,    // 0 // BOTTOM RIGHT
+             0.0f,   100.0f, 0.0f,      0.0f, 1.0f, 0.0f, 1.0f,         0, 1,    // 1 // TOP LEFT
+             100.0f, 100.0f, 0.0f,      0.0f, 0.0f, 1.0f, 1.0f,         1, 1,    // 2 // TOP RIGHT
+             0.0f,   0.0f,   0.0f,      1.0f, 1.0f, 0.0f, 1.0f,         0, 0,    // 3 // BOTTOM LEFT
     };
 
     private int[] elementArray ={
@@ -58,19 +61,26 @@ public class GameScene extends Scene {
 
     @Override
     public void update(float deltaTime) {
+        camera.position.x += deltaTime * -5.0f;
+        camera.position.y += deltaTime * -5.0f;
         // Bind shader program
-        glUseProgram(shaderProgram);
+        defaultShader.use();
+        defaultShader.uploadMat4f("uProjection", camera.getProjectionMatrix());
+        defaultShader.uploadMat4f("uView", camera.getViewMatrix());
         glBindVertexArray(vaoID);
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
 
         glDrawElements(GL_TRIANGLES, elementArray.length, GL_UNSIGNED_INT, 0);
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
 
         glBindVertexArray(0);
-        glUseProgram(0);
+        defaultShader.detach();
+
 
 //        glBegin(GL_TRIANGLES);
 //        glVertex3f(0.0f, -0.5f, 0.0f);
@@ -85,30 +95,9 @@ public class GameScene extends Scene {
 
     @Override
     public void init() {
-        //Compile shaders
-        // Create shader and pass the source (code) to the GPU
-
-        vertexID = glCreateShader(GL_VERTEX_SHADER);
-        CompileShader(vertexID, vertexShaderSource);
-
-        fragmentID = glCreateShader(GL_FRAGMENT_SHADER);
-        CompileShader(fragmentID, fragmentShaderSource);
-
-        // LINK the shaders and check for errors
-
-        shaderProgram = glCreateProgram();
-        glAttachShader(shaderProgram, vertexID);
-        glAttachShader(shaderProgram, fragmentID);
-        glLinkProgram(shaderProgram);
-
-        int success = glGetProgrami(shaderProgram, GL_LINK_STATUS);
-        if(success == GL_FALSE)
-        {
-            int len = glGetProgrami(shaderProgram, GL_INFO_LOG_LENGTH);
-            System.out.println("ERROR: FAILED TO LINK THE SHADERPROGRAM");
-            System.out.println(glGetProgramInfoLog(len));
-            assert false : "Shader linking failed";
-        }
+        this.camera = new Camera(new Vector2f());
+        defaultShader = new Shader("assets/shaders/default.glsl");
+        defaultShader.compile();
 
         // GENERATE VBO, VAO, EBO buffer objects and send them to the GPU
         vaoID = glGenVertexArrays();
@@ -134,7 +123,8 @@ public class GameScene extends Scene {
         // Add vertex attribute pointers
         int positionsSize = 3;
         int colorSize = 4;
-        int vertexSizeInBytes = (positionsSize + colorSize) * Float.BYTES;
+        int uvSize = 2;
+        int vertexSizeInBytes = (positionsSize + colorSize + uvSize) * Float.BYTES;
 
         glVertexAttribPointer(0, positionsSize, GL_FLOAT, false, vertexSizeInBytes, 0);
         glEnableVertexAttribArray(0);
@@ -142,21 +132,9 @@ public class GameScene extends Scene {
         glVertexAttribPointer(1, colorSize, GL_FLOAT, false, vertexSizeInBytes, positionsSize * Float.BYTES);
         glEnableVertexAttribArray(1);
 
+        glVertexAttribPointer(2, uvSize, GL_FLOAT, false, vertexSizeInBytes, (positionsSize + colorSize * Float.BYTES));
+        glEnableVertexAttribArray(2);
     }
 
-    private void CompileShader(int shaderID, String source)
-    {
-        //Compile the shader and check for errors
-        glShaderSource(shaderID, source);
-        glCompileShader(shaderID);
 
-        int success = glGetShaderi(shaderID, GL_COMPILE_STATUS);
-        if(success == GL_FALSE)
-        {
-            int len = glGetShaderi(shaderID, GL_INFO_LOG_LENGTH);
-            System.out.println("ERROR: default.glsl Shader Compilation Failed");
-            System.out.println(glGetShaderInfoLog(shaderID, len));
-            assert false : "Shader Compilation failed";
-        }
-    }
 }

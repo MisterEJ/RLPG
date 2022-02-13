@@ -2,6 +2,8 @@ package org.misterej.engine;
 
 public abstract class Scene {
 
+    protected Camera camera;
+    
     public int id;
     public static int _id = 0;
     public Scene()

@@ -8,8 +8,8 @@ public final class Config implements Serializable {
 
     private static Config config = new Config();
     public static boolean isFullscreen = false;
-    public static int w_width = 1024;
-    public static int w_height = 768;
+    public static int w_width = 1280;
+    public static int w_height = 720;
 
     public static void saveConfig()
     {
