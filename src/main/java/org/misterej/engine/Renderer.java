@@ -1,7 +1,6 @@
-package org.misterej.engine.render;
+package org.misterej.engine;
 
-import org.lwjgl.opengl.GL;
-import org.misterej.engine.render.Color;
+import org.misterej.engine.util.Color;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -9,11 +8,6 @@ import static org.lwjgl.opengl.GL11.*;
 public class Renderer {
 
     private Color clearColor = Color.Black;
-
-    public Renderer()
-    {
-        GL.createCapabilities();
-    }
 
     public void prepare()
     {

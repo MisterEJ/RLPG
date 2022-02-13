@@ -1,4 +1,4 @@
-package org.misterej.engine.render;
+package org.misterej.engine.util;
 
 // TODO: Color class
 
