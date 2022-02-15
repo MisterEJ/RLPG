@@ -2,6 +2,7 @@ package org.misterej.engine.renderer;
 
 import org.joml.*;
 import org.lwjgl.BufferUtils;
+import org.misterej.engine.util.Logger;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
@@ -56,14 +57,12 @@ public class Shader {
         } catch (IOException e)
         {
             e.printStackTrace();
-            assert false : "ERROR: Could not open file: " + filePath;
+            assert false : "ERROR:(Shader) Could not open file: " + filePath;
         }
     }
 
     public void compile()
     {
-        System.out.println(vertexSource);
-        System.out.println(fragmentSource);
         // Compiles and links the shaderProgram
         int vertexID, fragmentID;
 
@@ -86,7 +85,7 @@ public class Shader {
             int len = glGetProgrami(shaderProgramID, GL_INFO_LOG_LENGTH);
             System.out.println("ERROR: FAILED TO LINK THE SHADERPROGRAM");
             System.out.println(glGetProgramInfoLog(len));
-            assert false : "Shader linking failed";
+            assert false : "ERROR:(Shader) Shader linking failed";
         }
     }
 
@@ -100,9 +99,10 @@ public class Shader {
         if(success == GL_FALSE)
         {
             int len = glGetShaderi(shaderID, GL_INFO_LOG_LENGTH);
-            System.out.println("ERROR: "+ filePath +" Shader Compilation Failed");
+            Logger.logGL(glGetError());
+            System.out.println("ERROR:(Shader) "+ filePath +" Shader Compilation Failed");
             System.out.println(glGetShaderInfoLog(shaderID, len));
-            assert false : "Shader Compilation failed";
+            assert false : "ERROR:(Shader) Shader Compilation failed";
         }
     }
 
@@ -184,5 +184,12 @@ public class Shader {
         int varLocation = glGetUniformLocation(shaderProgramID, varName);
         use();
         glUniform1i(varLocation, i);
+    }
+
+    public void uploadTexture(String varName, int slot)
+    {
+        int varLocation = glGetUniformLocation(shaderProgramID, varName);
+        use();
+        glUniform1i(varLocation, slot);
     }
 }

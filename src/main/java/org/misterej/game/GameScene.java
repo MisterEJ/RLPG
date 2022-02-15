@@ -4,8 +4,11 @@ import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
 import org.misterej.engine.Camera;
+import org.misterej.engine.GameObject;
 import org.misterej.engine.Scene;
+import org.misterej.engine.components.TestComponent;
 import org.misterej.engine.renderer.Shader;
+import org.misterej.engine.renderer.Texture;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -16,39 +19,17 @@ import static org.lwjgl.opengl.GL30.*;
 
 public class GameScene extends Scene {
 
-    private final String fragmentShaderSource = "#version 330 core\n" +
-            "\n" +
-            "in vec4 fColor;\n" +
-            "\n" +
-            "out vec4 color;\n" +
-            "\n" +
-            "void main()\n" +
-            "{\n" +
-            "    color = fColor;\n" +
-            "}";
-
-    private final String vertexShaderSource = "#version 330 core\n" +
-            "\n" +
-            "layout (location=0) in vec3 aPos;\n" +
-            "layout (location=1) in vec4 aColor;\n" +
-            "\n" +
-            "out vec4 fColor;\n" +
-            "\n" +
-            "void main()\n" +
-            "{\n" +
-            "    fColor = aColor;\n" +
-            "    gl_Position = vec4(aPos, 1.0);\n" +
-            "}";
-
     private Shader defaultShader;
+    private Texture testTexture;
     private int vaoID, vboID, eboID;
+    private GameObject testObject;
 
     private float[] vertexArray = {
-            //position                  Color                           UV
-             100.0f, 0.0f,   0.0f,      1.0f, 0.0f, 0.0f, 1.0f,         1, 0,    // 0 // BOTTOM RIGHT
-             0.0f,   100.0f, 0.0f,      0.0f, 1.0f, 0.0f, 1.0f,         0, 1,    // 1 // TOP LEFT
-             100.0f, 100.0f, 0.0f,      0.0f, 0.0f, 1.0f, 1.0f,         1, 1,    // 2 // TOP RIGHT
-             0.0f,   0.0f,   0.0f,      1.0f, 1.0f, 0.0f, 1.0f,         0, 0,    // 3 // BOTTOM LEFT
+            //position                  Color                               UV
+             500.0f, 250.0f,   0.0f,      1.0f, 0.0f, 0.0f, 1.0f,           1, 1,    // 0 // BOTTOM RIGHT
+             250.0f, 500.0f, 0.0f,      0.0f, 1.0f, 0.0f, 1.0f,             0, 0,    // 1 // TOP LEFT
+             500.0f, 500.0f, 0.0f,      0.0f, 0.0f, 1.0f, 1.0f,             1, 0,    // 2 // TOP RIGHT
+             250.0f,   250.0f,   0.0f,      1.0f, 1.0f, 0.0f, 1.0f,         0, 1,    // 3 // BOTTOM LEFT
     };
 
     private int[] elementArray ={
@@ -61,12 +42,18 @@ public class GameScene extends Scene {
 
     @Override
     public void update(float deltaTime) {
-        camera.position.x += deltaTime * -5.0f;
-        camera.position.y += deltaTime * -5.0f;
         // Bind shader program
+        //Upload uniforms
         defaultShader.use();
+
         defaultShader.uploadMat4f("uProjection", camera.getProjectionMatrix());
         defaultShader.uploadMat4f("uView", camera.getViewMatrix());
+
+
+        defaultShader.uploadTexture("TEX_SAMPLER", 0);
+        glActiveTexture(GL_TEXTURE0);
+        testTexture.bind();
+
         glBindVertexArray(vaoID);
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
@@ -78,26 +65,30 @@ public class GameScene extends Scene {
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
 
+        testTexture.unbind();
         glBindVertexArray(0);
         defaultShader.detach();
 
-
-//        glBegin(GL_TRIANGLES);
-//        glVertex3f(0.0f, -0.5f, 0.0f);
-//        glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
-//        glVertex3f(-0.5f, 0.5f, 0.0f);
-//        glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
-//        glVertex3f(0.5f, 0.5f, 0.0f);
-//        glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
-//        glEnd();
+        for(GameObject go : gameObjects)
+        {
+            go.update(deltaTime);
+        }
 
     }
 
     @Override
     public void init() {
-        this.camera = new Camera(new Vector2f());
+
+        this.testObject = new GameObject("oTestObject");
+        this.testObject.addComponent(new TestComponent());
+        addGameObject(testObject);
+
+
         defaultShader = new Shader("assets/shaders/default.glsl");
         defaultShader.compile();
+
+        this.testTexture = new Texture("assets/textures/player.png");
+        this.camera = new Camera(new Vector2f());
 
         // GENERATE VBO, VAO, EBO buffer objects and send them to the GPU
         vaoID = glGenVertexArrays();
@@ -132,7 +123,7 @@ public class GameScene extends Scene {
         glVertexAttribPointer(1, colorSize, GL_FLOAT, false, vertexSizeInBytes, positionsSize * Float.BYTES);
         glEnableVertexAttribArray(1);
 
-        glVertexAttribPointer(2, uvSize, GL_FLOAT, false, vertexSizeInBytes, (positionsSize + colorSize * Float.BYTES));
+        glVertexAttribPointer(2, uvSize, GL_FLOAT, false, vertexSizeInBytes, (positionsSize + colorSize) * Float.BYTES);
         glEnableVertexAttribArray(2);
     }
 

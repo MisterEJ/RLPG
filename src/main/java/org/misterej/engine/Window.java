@@ -78,6 +78,7 @@ public class Window {
         float deltaTime = 0.0f;
 
         SceneManager.getCurrentScene().init();
+        SceneManager.getCurrentScene().start();
         while(!shouldClose())
         {
             beginTime = Time.getTime();

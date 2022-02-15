@@ -7,7 +7,7 @@ import static org.lwjgl.opengl.GL11.*;
 // TODO: Renderer class
 public class Renderer {
 
-    private Color clearColor = Color.Black;
+    private Color clearColor = Color.White;
 
     public void prepare()
     {
