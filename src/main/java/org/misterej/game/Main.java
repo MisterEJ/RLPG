@@ -20,8 +20,6 @@ public class Main {
 
         SceneManager.addScene(scene1);
 
-        SceneManager.setScene(scene1.id);
-
         window.run();
     }
 

@@ -2,37 +2,50 @@ package org.misterej.engine;
 
 import java.util.*;
 
-//TODO REWRITE SCENE MANAGER
-// ONLY ONE SCENE SHOULD BE LOADED AT A TIME
-// SCENE OBJECT SHOULD STORED IN THE SCENE_MANAGER SINGLETON
+/*
+    Scene Manager
+    Manages scenes
+    Singleton Class
+ */
 
 public class SceneManager {
-    private static SceneManager instance;
-    private Map<Integer, Scene> scenes = new HashMap<>();
 
-    public static SceneManager getInstance() {
+    private static SceneManager instance;
+    private List<Scene> scenes = new ArrayList<>();
+
+    private Scene currentScene = null;
+
+    public static SceneManager getInstance()
+    {
         if(instance == null) instance = new SceneManager();
         return instance;
     }
 
-    private static Scene currentScene = null;
-
     public static Scene getCurrentScene()
     {
-        assert currentScene != null : "Unknown scene: " + currentScene;
-        return currentScene;
+        assert getInstance().currentScene != null : "Unknown scene: " + getInstance().currentScene;
+        return getInstance().currentScene;
     }
 
-    public static void setScene(int id)
+    public static <T extends Scene> void setScene(Class<T> componentClass)
     {
-        if(getInstance().scenes.get(id) != null)
+        for (Scene scene : getInstance().scenes)
         {
-            currentScene = getInstance().scenes.get(id);
+            if(componentClass.isAssignableFrom(scene.getClass()))
+            {
+                getInstance().currentScene = scene;
+                return;
+            }
         }
     }
 
     public static void addScene(Scene scene)
     {
-        getInstance().scenes.put(scene.id, scene);
+        getInstance().scenes.add(scene);
+
+        if(getInstance().currentScene == null && getInstance().scenes.size() == 1)
+        {
+            getInstance().currentScene = getInstance().scenes.get(0);
+        }
     }
 }

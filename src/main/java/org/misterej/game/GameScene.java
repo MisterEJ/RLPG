@@ -33,7 +33,7 @@ public class GameScene extends Scene {
     };
 
     private int[] elementArray ={
-            // COUNTER CLOCKWISE
+                        // COUNTER CLOCKWISE
             2, 1, 0,    // TOP LEFT TRIANGLE
             0, 1, 3,    // BOTTOM RIGHT TRIANGLE
     };
@@ -43,7 +43,7 @@ public class GameScene extends Scene {
     @Override
     public void update(float deltaTime) {
         // Bind shader program
-        //Upload uniforms
+        // Upload uniforms
         defaultShader.use();
 
         defaultShader.uploadMat4f("uProjection", camera.getProjectionMatrix());
@@ -82,7 +82,6 @@ public class GameScene extends Scene {
         this.testObject = new GameObject("oTestObject");
         this.testObject.addComponent(new TestComponent());
         addGameObject(testObject);
-
 
         defaultShader = new Shader("assets/shaders/default.glsl");
         defaultShader.compile();

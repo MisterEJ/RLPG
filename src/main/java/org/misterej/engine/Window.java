@@ -5,6 +5,7 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
+import org.misterej.engine.util.Logger;
 import org.misterej.engine.util.Time;
 
 import java.nio.IntBuffer;
@@ -12,7 +13,6 @@ import java.nio.IntBuffer;
 import static java.sql.Types.NULL;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import org.lwjgl.opengl.GL.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class Window {
@@ -29,6 +29,7 @@ public class Window {
     private void init()
     {
         // ERROR CALLBACK SETUP
+        // AUTOMATICLY PRINTS ERRORS
         GLFWErrorCallback.createPrint(System.err).set();
 
         if(!glfwInit())
@@ -44,35 +45,46 @@ public class Window {
 
         // SET CALLBACKS
 
+        // Input.MouseListener
         glfwSetCursorPosCallback(window, Input.MouseListener::mousePosCallback);
         glfwSetMouseButtonCallback(window, Input.MouseListener::mouseButtonCallback);
         glfwSetScrollCallback(window, Input.MouseListener::mouseScrollCallback);
-
+        // Input.KeyboardListener
         glfwSetKeyCallback(window, Input.KeyboardListener::keyCallback);
 
         // Center the window
         try (MemoryStack stack = stackPush())
         {
+            // glfw returns a buffer of size 1
             IntBuffer pWidth = stack.mallocInt(1);
             IntBuffer pHeight = stack.mallocInt(1);
 
             glfwGetWindowSize(window, pWidth, pHeight);
 
             GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-            assert vidMode != null : "Cant get GLFWVideoMode";
+            assert vidMode != null : "ERROR: (WINDOW) Cant get GLFWVideoMode";
 
             glfwSetWindowPos(window, (vidMode.width() - pWidth.get(0)) / 2, (vidMode.height() - pHeight.get(0)) / 2);
         }
 
-        glfwMakeContextCurrent(window); // OpenGL context
+        // Make the opengl context current
+        glfwMakeContextCurrent(window);
         GL.createCapabilities();
+
         System.out.println("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
-        glfwSwapInterval(1); // VSync
-        glfwShowWindow(window); // Show window
+        Logger.log("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
+
+        // Enable Vsync (60fps)
+        glfwSwapInterval(1);
+
+        // Show window
+        glfwShowWindow(window);
     }
 
     private void loop()
     {
+        // Calculating delta time
+        // Time it takes to render one frame
         float beginTime;
         float endTime;
         float deltaTime = 0.0f;
@@ -83,7 +95,6 @@ public class Window {
         {
             beginTime = Time.getTime();
             renderer.prepare();
-
 
             SceneManager.getCurrentScene().update(deltaTime);
 

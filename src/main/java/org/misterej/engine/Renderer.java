@@ -1,6 +1,6 @@
 package org.misterej.engine;
 
-import org.misterej.engine.util.Color;
+import org.misterej.engine.renderer.Color;
 
 import static org.lwjgl.opengl.GL11.*;
 
