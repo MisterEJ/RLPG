@@ -107,6 +107,11 @@ public class Window {
         }
     }
 
+    /**
+     * Initialize the window
+     * Set's up GLFW and GLFW callbacks
+     * Starts the game loop
+     */
     public void run()
     {
         init();

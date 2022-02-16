@@ -1,5 +1,7 @@
 package org.misterej.engine;
 
+import java.util.Arrays;
+
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Input {
@@ -15,7 +17,7 @@ public class Input {
         private static MouseListener instance;
         private double scrollX, scrollY;
         private double xPos, yPos, lastX, lastY;
-        private boolean mouseButtonPressed[] = new boolean[3];
+        private boolean[] mouseButtonPressed = new boolean[3];
         private boolean isDragging;
 
         private MouseListener()
@@ -127,9 +129,9 @@ public class Input {
     public static class KeyboardListener
     {
         static KeyboardListener instance;
-        private boolean keyPressed[] = new boolean[350];
-        private boolean keyReleased[] = new boolean[350];
-        private boolean keyDown[] = new boolean[350];
+        private boolean[] keyPressed = new boolean[350];
+        private boolean[] keyReleased = new boolean[350];
+        private boolean[] keyDown = new boolean[350];
 
         public static KeyboardListener getInstance() {
             if(instance == null)
@@ -162,16 +164,16 @@ public class Input {
             /*
                 Resets keyReleased and keyPressed arrays after every frame
              */
-            for (int i = 0; i < getInstance().keyReleased.length; i++)
-            {
-                getInstance().keyReleased[i] = false;
-            }
-            for (int i = 0; i < getInstance().keyPressed.length; i++)
-            {
-                getInstance().keyPressed[i] = false;
-            }
+            Arrays.fill(getInstance().keyReleased, false);
+            Arrays.fill(getInstance().keyPressed, false);
         }
 
+
+        /**
+         * Check to see if a specific key was pressed
+         * @param key int
+         * @return boolean
+         */
         public static boolean iskeyPressed(int key)
         {
             if(key < getInstance().keyPressed.length)
@@ -181,6 +183,12 @@ public class Input {
             return false;
         }
 
+
+        /**
+         * Check to see if a specific key was released
+         * @param key int
+         * @return boolean
+         */
         public static boolean isKeyReleased(int key)
         {
             if(key < getInstance().keyReleased.length)
@@ -190,6 +198,12 @@ public class Input {
             return false;
         }
 
+
+        /**
+         * Check to see if a specific key is currently being pressed
+         * @param key int
+         * @return boolean
+         */
         public static boolean isKeyDown(int key)
         {
             if(key < getInstance().keyDown.length)

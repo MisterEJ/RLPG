@@ -18,7 +18,10 @@ public abstract class Scene {
         _id++;
     }
 
-
+    /**
+     * Start the scene
+     * Calls the start method for the objects in the scene
+     */
     public void start()
     {
         for(GameObject go : gameObjects)
@@ -28,6 +31,12 @@ public abstract class Scene {
         }
     }
 
+
+    /**
+     * Add GameObject to the scene
+     *
+     * @param go GameObject
+     */
     public void addGameObject(GameObject go)
     {
         if(!isRunning)

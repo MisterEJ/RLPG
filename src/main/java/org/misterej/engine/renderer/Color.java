@@ -2,6 +2,8 @@ package org.misterej.engine.renderer;
 
 // TODO: Color class
 
+import org.joml.Vector4f;
+
 public class Color {
 
     private float r;
@@ -45,6 +47,11 @@ public class Color {
         this.g = g;
         this.b = b;
         this.a = 0.0f;
+    }
+
+    public Vector4f getColor4f()
+    {
+        return new Vector4f(r,g,b,a);
     }
 
     public float getR() {

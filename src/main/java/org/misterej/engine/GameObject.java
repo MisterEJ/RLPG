@@ -9,12 +9,26 @@ public class GameObject {
     private final String name;
     private List<Component> components;
 
+    public Transform transfrom;
+
     public GameObject (String name)
     {
         this.name = name;
         this.components = new ArrayList<>();
+        this.transfrom = new Transform();
     }
 
+    public GameObject (String name, Transform transform)
+    {
+        this.name = name;
+        this.components = new ArrayList<>();
+        this.transfrom = transform;
+    }
+
+    /**
+     * Get a specific component
+     * @param <T> componentClass
+     */
     public <T extends Component> T getComponent(Class<T> componentClass)
     {
         for(Component c : components)
@@ -35,6 +49,11 @@ public class GameObject {
         return null;
     }
 
+
+    /**
+     * Remove a specific component from the object.
+     * @param <T> componentClass
+     */
     public <T extends Component> void removeComponent(Class<T> componentClass)
     {
         for(int i = 0; i < components.size(); i++)
@@ -47,12 +66,19 @@ public class GameObject {
         }
     }
 
+
+    /**
+     * Add a specific component from the object.
+     */
     public void addComponent(Component c)
     {
         this.components.add(c);
         c.gameObject = this;
     }
 
+    /**
+     * Calls the update method for the components
+     */
     public void update(float deltaTime)
     {
         for(Component c : this.components)
@@ -61,6 +87,9 @@ public class GameObject {
         }
     }
 
+    /**
+     * Calls the start method for the components
+     */
     public void start()
     {
         for(Component c : this.components)

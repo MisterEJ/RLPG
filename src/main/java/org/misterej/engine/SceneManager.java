@@ -21,6 +21,9 @@ public class SceneManager {
         return instance;
     }
 
+    /**
+     * Gets the current scene
+     */
     public static Scene getCurrentScene()
     {
         assert getInstance().currentScene != null : "Unknown scene: " + getInstance().currentScene;
@@ -39,6 +42,9 @@ public class SceneManager {
         }
     }
 
+    /**
+     * Add a scene to the scene manager
+     */
     public static void addScene(Scene scene)
     {
         getInstance().scenes.add(scene);
