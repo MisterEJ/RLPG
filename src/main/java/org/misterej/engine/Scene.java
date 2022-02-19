@@ -5,6 +5,8 @@ import java.util.List;
 
 public abstract class Scene {
 
+
+    protected Renderer renderer = new Renderer();
     protected Camera camera;
 
     protected List<GameObject> gameObjects = new ArrayList<>();
@@ -28,13 +30,20 @@ public abstract class Scene {
         {
             go.start();
             isRunning = true;
+            this.renderer.add(go);
         }
     }
 
+    /**
+     * Returns the camera
+     */
+    public Camera getCamera()
+    {
+        return this.camera;
+    }
 
     /**
      * Add GameObject to the scene
-     *
      * @param go GameObject
      */
     public void addGameObject(GameObject go)
@@ -47,6 +56,7 @@ public abstract class Scene {
         {
             gameObjects.add(go);
             go.start();
+            this.renderer.add(go);
         }
     }
 

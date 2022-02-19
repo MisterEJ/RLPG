@@ -1,5 +1,6 @@
 package org.misterej.engine.util;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,7 +16,7 @@ public class Logger {
 
     private String filePath;
     private FileWriter fw;
-    boolean working = false;
+    boolean working;
 
     private Logger(String filePath)
     {
@@ -26,6 +27,7 @@ public class Logger {
         } catch (IOException e)
         {
             working = false;
+            System.out.println(e.getMessage());
         }
     }
 

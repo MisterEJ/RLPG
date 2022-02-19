@@ -63,6 +63,7 @@ public class Shader {
 
     public void compile()
     {
+        Logger.log("Compiling shader: " + filePath);
         // Compiles and links the shaderProgram
         int vertexID, fragmentID;
 
@@ -87,6 +88,7 @@ public class Shader {
             System.out.println(glGetProgramInfoLog(len));
             assert false : "ERROR:(Shader) Shader linking failed";
         }
+
     }
 
     private void CompileShader(int shaderID, String source)

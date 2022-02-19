@@ -16,7 +16,6 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class Window {
-    private Renderer renderer = new Renderer();
 
     private long window;
     public final String title;
@@ -87,14 +86,14 @@ public class Window {
         // Time it takes to render one frame
         float beginTime;
         float endTime;
-        float deltaTime = 0.0f;
+        float deltaTime = 1.0f;
 
         SceneManager.getCurrentScene().init();
         SceneManager.getCurrentScene().start();
         while(!shouldClose())
         {
             beginTime = Time.getTime();
-            renderer.prepare();
+            SceneManager.getCurrentScene().renderer.prepare();
 
             SceneManager.getCurrentScene().update(deltaTime);
 
@@ -104,6 +103,7 @@ public class Window {
 
             endTime = Time.getTime();
             deltaTime = endTime - beginTime;
+            System.out.println(1.0f / deltaTime);
         }
     }
 

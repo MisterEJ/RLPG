@@ -11,11 +11,11 @@ public class Color {
     private float b;
     private float a;
 
-    public static Color Red = new Color(1.0f, 0.0f, 0.0f, 0.0f);
-    public static Color Green = new Color(0.0f, 1.0f, 0.0f, 0.0f);
-    public static Color Blue = new Color(0.0f, 0.0f, 1.0f, 0.0f);
-    public static Color Black = new Color(0.0f, 0.0f, 0.0f, 0.0f);
-    public static Color White = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+    public static Color Red = new Color(1.0f, 0.0f, 0.0f, 1.0f);
+    public static Color Green = new Color(0.0f, 1.0f, 0.0f, 1.0f);
+    public static Color Blue = new Color(0.0f, 0.0f, 1.0f, 1.0f);
+    public static Color Black = new Color(0.0f, 0.0f, 0.0f, 1.0f);
+    public static Color White = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 
     public Color(float r, float g, float b, float a)
     {
@@ -51,7 +51,7 @@ public class Color {
 
     public Vector4f getColor4f()
     {
-        return new Vector4f(r,g,b,a);
+        return new Vector4f(this.r,this.g,this.b,this.a);
     }
 
     public float getR() {
