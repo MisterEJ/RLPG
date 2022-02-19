@@ -6,6 +6,7 @@ import org.misterej.engine.Camera;
 import org.misterej.engine.GameObject;
 import org.misterej.engine.Scene;
 import org.misterej.engine.Transform;
+import org.misterej.engine.components.ScriptComponent;
 import org.misterej.engine.components.SpriteRenderer;
 import org.misterej.engine.renderer.Color;
 
@@ -16,12 +17,10 @@ public class GameScene extends Scene {
 
     @Override
     public void update(float deltaTime) {
-        //System.out.println("FPS: " + 1.0f / deltaTime);
 
         for(GameObject go : this.gameObjects)
         {
             go.update(deltaTime);
-            go.transfrom.position.x += 1 * deltaTime;
             renderer.updateSprite(go);
         }
 
@@ -34,6 +33,7 @@ public class GameScene extends Scene {
 
         GameObject go = new GameObject("OBJ", new Transform(new Vector2f(0.0f, 0.0f), new Vector2f(100, 100)));
         go.addComponent(new SpriteRenderer(Color.Black));
+        go.addComponent(new ScriptComponent(new PlayerController(go)));
         this.addGameObject(go);
 
     }

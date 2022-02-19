@@ -133,7 +133,7 @@ public class Window {
         glfwSetErrorCallback(null).free();
     }
 
-    private void setFullscreen()
+    public void setFullscreen()
     {
         GLFWVidMode mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
