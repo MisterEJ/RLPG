@@ -4,7 +4,11 @@ import org.joml.Vector4f;
 import org.misterej.engine.GameObject;
 import org.misterej.engine.SceneManager;
 import org.misterej.engine.components.SpriteRenderer;
+import org.misterej.engine.util.AssetPool;
 import org.misterej.engine.util.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -24,6 +28,7 @@ public class RenderBatch {
     private final int VERTEX_SIZE_BYTES = VERTEX_SIZE * Float.BYTES;
 
     private SpriteRenderer[] sprites;
+    private Map<SpriteRenderer, Integer> spriteIndex = new HashMap<>();
     private int numSprites;
     private boolean hasRoom;
     private float[] vertices;
@@ -34,8 +39,7 @@ public class RenderBatch {
 
     public RenderBatch(int maxBatchSize)
     {
-        shader = new Shader("assets/shaders/default.glsl");
-        shader.compile();
+        shader = AssetPool.getShader("assets/shaders/default.glsl");
 
         this.sprites = new SpriteRenderer[maxBatchSize];
         this.maxBatchSize = maxBatchSize;
@@ -95,16 +99,13 @@ public class RenderBatch {
         shader.detach();
     }
 
-    public void updateSprite(GameObject gameObject)
+    public void updateSprite(SpriteRenderer spr)
     {
-        for(int i = 0; i < numSprites; i++)
+        if(this.spriteIndex.containsKey(spr))
         {
-            if(sprites[i].gameObject == gameObject)
-            {
-                sprites[i] = gameObject.getComponent(SpriteRenderer.class);
-                loadVertexProperties(i);
-                break;
-            }
+            int i = this.spriteIndex.get(spr);
+            sprites[i] = spr;
+            loadVertexProperties(i);
         }
     }
 
@@ -114,6 +115,7 @@ public class RenderBatch {
         int index = this.numSprites;
         this.sprites[index] = spr;
         this.numSprites++;
+        this.spriteIndex.put(spr, index);
 
         loadVertexProperties(index);
 

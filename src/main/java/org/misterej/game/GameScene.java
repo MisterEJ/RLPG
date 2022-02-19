@@ -1,16 +1,9 @@
 package org.misterej.game;
 
 import org.joml.Vector2f;
-import org.joml.Vector4f;
-import org.misterej.engine.Camera;
-import org.misterej.engine.GameObject;
-import org.misterej.engine.Scene;
-import org.misterej.engine.Transform;
-import org.misterej.engine.components.ScriptComponent;
-import org.misterej.engine.components.SpriteRenderer;
-import org.misterej.engine.renderer.Color;
-
-import java.io.PipedOutputStream;
+import org.misterej.engine.*;
+import org.misterej.engine.components.*;
+import org.misterej.engine.renderer.*;
 
 public class GameScene extends Scene {
 
@@ -21,7 +14,7 @@ public class GameScene extends Scene {
         for(GameObject go : this.gameObjects)
         {
             go.update(deltaTime);
-            renderer.updateSprite(go);
+            renderer.updateSprite(go.getComponent(SpriteRenderer.class));
         }
 
         this.renderer.render();
@@ -31,11 +24,19 @@ public class GameScene extends Scene {
     public void init() {
         this.camera = new Camera(new Vector2f());
 
-        GameObject go = new GameObject("OBJ", new Transform(new Vector2f(0.0f, 0.0f), new Vector2f(100, 100)));
-        go.addComponent(new SpriteRenderer(Color.Black));
-        go.addComponent(new ScriptComponent(new PlayerController(go)));
-        this.addGameObject(go);
+        int width = 16;
+        int height = 16;
 
+        for (int i = 0; i < 1280 / width; i++)
+        {
+            for(int j = 0; j < 720 / height; j++)
+            {
+                GameObject go = new GameObject("OBJ" + i + " " + j, new Transform(new Vector2f(i * width, j * width), new Vector2f(width,height)));
+                go.addComponent(new SpriteRenderer(Color.Blue));
+                go.addComponent(new ScriptComponent(new PlayerController(go)));
+                this.addGameObject(go);
+            }
+        }
     }
 
 }

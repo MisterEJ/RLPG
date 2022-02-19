@@ -59,11 +59,11 @@ public class Renderer {
         }
     }
 
-    public void updateSprite(GameObject gameObject)
+    public void updateSprite(SpriteRenderer spr)
     {
         for(RenderBatch batch : batches)
         {
-            batch.updateSprite(gameObject);
+            batch.updateSprite(spr);
         }
     }
 
