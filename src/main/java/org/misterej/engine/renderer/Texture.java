@@ -1,5 +1,6 @@
 package org.misterej.engine.renderer;
 
+import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 import org.misterej.engine.util.Logger;
 
@@ -14,6 +15,7 @@ public class Texture {
 
     private String filePath;
     private int texID;
+    private int width, height;
 
     public Texture(String filePath)
     {
@@ -34,7 +36,12 @@ public class Texture {
         IntBuffer width = BufferUtils.createIntBuffer(1);
         IntBuffer height = BufferUtils.createIntBuffer(1);
         IntBuffer channels = BufferUtils.createIntBuffer(1);
+        stbi_set_flip_vertically_on_load(true);
         ByteBuffer image = stbi_load(filePath, width, height, channels, 0);
+
+        this.width = width.get(0);
+        this.height = height.get(0);
+        Logger.log(filePath + " Channels: " + channels.get(0));
 
         if (image != null)
         {
@@ -44,7 +51,7 @@ public class Texture {
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width.get(0), height.get(0), 0, GL_RGB, GL_UNSIGNED_BYTE, image);
             else
                 assert false : "ERROR: (Texture) unknown format: " + filePath;
-            Logger.getInstance().logGL(glGetError());
+            Logger.logGL(glGetError());
         }
         else
         {
@@ -53,6 +60,21 @@ public class Texture {
 
         stbi_image_free(image);
 
+    }
+
+    public Vector2f getSize()
+    {
+        return new Vector2f(this.width, this.height);
+    }
+
+    public int getWidth()
+    {
+        return this.width;
+    }
+
+    public int getHeight()
+    {
+        return this.height;
     }
 
     public void bind()

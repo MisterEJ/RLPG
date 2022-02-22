@@ -1,5 +1,6 @@
 package org.misterej.engine.util;
 
+import org.misterej.engine.components.SpriteSheet;
 import org.misterej.engine.renderer.Shader;
 import org.misterej.engine.renderer.Texture;
 
@@ -8,46 +9,52 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AssetPool {
-    private Map<String, Shader> shaders;
-    private Map<String, Texture> textures;
-
-    private static AssetPool instance;
-
-    private AssetPool()
-    {
-        this.shaders = new HashMap<>();
-        this.textures = new HashMap<>();
-    }
-
-
-    public static AssetPool getInstance() {
-        if(instance == null) instance = new AssetPool();
-        return instance;
-    }
+    private static Map<String, Shader> shaders = new HashMap<>();
+    private static Map<String, Texture> textures = new HashMap<>();
+    private static Map<String, SpriteSheet> spriteSheets = new HashMap<>();
 
     public static Shader getShader(String filePath)
     {
         File file = new File(filePath);
-        if(!getInstance().shaders.containsKey(file.getAbsolutePath()))
+        if(!shaders.containsKey(file.getAbsolutePath()))
         {
             Shader shader = new Shader(file.getAbsolutePath());
             shader.compile();
-            getInstance().shaders.put(file.getAbsolutePath(), shader);
+            shaders.put(file.getAbsolutePath(), shader);
         }
 
-        return getInstance().shaders.get(file.getAbsolutePath());
+        return shaders.get(file.getAbsolutePath());
     }
 
     public static Texture getTexture(String filePath)
     {
         File file = new File(filePath);
-        if(!getInstance().textures.containsKey(file.getAbsolutePath()))
+        if(!textures.containsKey(file.getAbsolutePath()))
         {
             Texture texture = new Texture(file.getAbsolutePath());
-            getInstance().textures.put(file.getAbsolutePath(), texture);
+            textures.put(file.getAbsolutePath(), texture);
         }
 
-        return getInstance().textures.get(file.getAbsolutePath());
+        return textures.get(file.getAbsolutePath());
+    }
+
+    public static void addSpriteSheet(String resourceName, SpriteSheet spriteSheet)
+    {
+        File file = new File(resourceName);
+        if(!AssetPool.spriteSheets.containsKey(file.getAbsolutePath()))
+        {
+            AssetPool.spriteSheets.put(file.getAbsolutePath(), spriteSheet);
+        }
+    }
+
+    public static SpriteSheet getSpriteSheet(String resourceName)
+    {
+        File file = new File(resourceName);
+        if(!AssetPool.spriteSheets.containsKey(file.getAbsolutePath()))
+        {
+            assert false : "No sprite sheet: " + resourceName;
+        }
+        return AssetPool.spriteSheets.getOrDefault(file.getAbsolutePath(), null);
     }
 
 }

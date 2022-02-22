@@ -1,15 +1,17 @@
 package org.misterej.engine;
 
+import org.joml.Vector2f;
+import org.misterej.engine.components.SpriteRenderer;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameObject {
 
-    private Component p;
     private final String name;
     private List<Component> components;
 
-    public Transform transfrom;
+    private Transform transfrom;
 
     public GameObject (String name)
     {
@@ -74,6 +76,21 @@ public class GameObject {
     {
         this.components.add(c);
         c.gameObject = this;
+    }
+
+    public void move(Vector2f distance)
+    {
+        transfrom.position.add(distance);
+        SpriteRenderer spr = getComponent(SpriteRenderer.class);
+        if(spr != null)
+        {
+            spr.setDirtyFlag();
+        }
+    }
+
+    public Transform getTransform()
+    {
+        return transfrom;
     }
 
     /**

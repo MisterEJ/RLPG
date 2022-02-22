@@ -3,6 +3,7 @@ package org.misterej.engine;
 import org.misterej.engine.components.SpriteRenderer;
 import org.misterej.engine.renderer.Color;
 import org.misterej.engine.renderer.RenderBatch;
+import org.misterej.engine.renderer.Texture;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ public class Renderer {
 
     private final int MAX_BATCH_SIZE = 1000;
 
-    private Color clearColor = Color.Green;
+    private Color clearColor = new Color(0.5f, 0.5f, 0.5f, 1);
     private List<RenderBatch> batches;
 
     public Renderer()
@@ -42,11 +43,15 @@ public class Renderer {
         boolean added = false;
         for(RenderBatch batch : batches)
         {
-            if(batch.hasRoom())
-            {
-                batch.addSprite(spr);
-                added = true;
-                break;
+            if(batch.hasRoom()) {
+                Texture texture = spr.getTexture();
+
+                if (texture == null || (batch.hasTexture(texture) || batch.hasTextureRoom()))
+                {
+                    batch.addSprite(spr);
+                    added = true;
+                    break;
+                }
             }
         }
 
@@ -58,15 +63,6 @@ public class Renderer {
             newBatch.addSprite(spr);
         }
     }
-
-    public void updateSprite(SpriteRenderer spr)
-    {
-        for(RenderBatch batch : batches)
-        {
-            batch.updateSprite(spr);
-        }
-    }
-
 
     public void render()
     {

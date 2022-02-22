@@ -1,6 +1,8 @@
 package org.misterej.game;
 
-import org.misterej.engine.GameObject;
+import org.joml.Vector2f;
+import org.lwjgl.glfw.GLFW;
+import org.misterej.engine.*;
 import org.misterej.engine.components.Script;
 import org.misterej.engine.components.SpriteRenderer;
 import org.misterej.engine.renderer.Color;
@@ -10,16 +12,28 @@ public class PlayerController extends Script {
         super(gameObject);
     }
 
-    private SpriteRenderer spr;
+    private Camera camera;
+
+    private SpriteRenderer spr = gameObject.getComponent(SpriteRenderer.class);
+    private float speed = 100f;
 
     @Override
     public void update(float deltaTime) {
-        gameObject.transfrom.position.x += 10 * deltaTime;
+        if(Input.KeyboardListener.isKeyDown(GLFW.GLFW_KEY_A))
+            gameObject.move(new Vector2f(speed * -deltaTime, 0));
+        if(Input.KeyboardListener.isKeyDown(GLFW.GLFW_KEY_D))
+            gameObject.move(new Vector2f(speed * deltaTime, 0));
+        if(Input.KeyboardListener.isKeyDown(GLFW.GLFW_KEY_W))
+            gameObject.move(new Vector2f(0, speed * deltaTime));
+        if(Input.KeyboardListener.isKeyDown(GLFW.GLFW_KEY_S))
+            gameObject.move(new Vector2f(0, speed * -deltaTime));
+
+        camera.position.x = gameObject.getTransform().position.x - (Config.w_width / 2f) + (gameObject.getTransform().size.x / 2f);
+        camera.position.y = gameObject.getTransform().position.y - (Config.w_height / 2f) + (gameObject.getTransform().size.y / 2f);
     }
 
     @Override
     public void start() {
-        spr = gameObject.getComponent(SpriteRenderer.class);
-        spr.setColor(new Color(0.5f, 0.2f, 0.7f, 1.0f));
+        camera = SceneManager.getCurrentScene().getCamera();
     }
 }
