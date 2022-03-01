@@ -14,6 +14,7 @@ public class GameScene extends Scene {
 
     @Override
     public void update(float deltaTime) {
+        this.renderer.prepare();
 
         for(GameObject go : this.gameObjects)
         {

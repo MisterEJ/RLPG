@@ -1,13 +1,12 @@
 package org.misterej.game;
 
+import org.misterej.engine.LevelEditor;
 import org.misterej.engine.Scene;
 import org.misterej.engine.SceneManager;
 import org.misterej.engine.Window;
 
 
 public class Main {
-
-    private Window window = new Window("RLPG");
 
     public static void main(String[] args)
     {
@@ -16,11 +15,11 @@ public class Main {
 
     public void run()
     {
-        Scene scene1 = new GameScene();
+        Scene scene = new LevelEditor();
 
-        SceneManager.addScene(scene1);
+        SceneManager.addScene(scene);
 
-        window.run();
+        Window.get().run();
     }
 
 }

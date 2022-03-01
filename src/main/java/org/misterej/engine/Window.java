@@ -17,18 +17,24 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class Window {
 
+    private Window(String name)
+    {
+        this.title = name;
+    }
+
+    private static Window instance = new Window("RLPG");
+
     private long window;
     public final String title;
 
-    public Window(String title)
+    public static Window get()
     {
-        this.title = title;
+        return instance;
     }
 
     private void init()
     {
         // ERROR CALLBACK SETUP
-        // AUTOMATICLY PRINTS ERRORS
         GLFWErrorCallback.createPrint(System.err).set();
 
         if(!glfwInit())
@@ -36,7 +42,7 @@ public class Window {
 
         // CONFIGURE GLFW and CREATE THE WINDOW
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         window = glfwCreateWindow(Config.w_width, Config.w_height, title, 0, 0);
         if(window == 0)
@@ -44,11 +50,9 @@ public class Window {
 
         // SET CALLBACKS
 
-        // Input.MouseListener
         glfwSetCursorPosCallback(window, Input.MouseListener::mousePosCallback);
         glfwSetMouseButtonCallback(window, Input.MouseListener::mouseButtonCallback);
         glfwSetScrollCallback(window, Input.MouseListener::mouseScrollCallback);
-        // Input.KeyboardListener
         glfwSetKeyCallback(window, Input.KeyboardListener::keyCallback);
 
         // Center the window
@@ -70,10 +74,9 @@ public class Window {
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
 
-        System.out.println("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
         Logger.log("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
 
-        // Enable Vsync (60fps)
+        // Enable Vsync
         glfwSwapInterval(1);
 
         // Show window
@@ -83,17 +86,16 @@ public class Window {
     private void loop()
     {
         // Calculating delta time
-        // Time it takes to render one frame
         float beginTime;
         float endTime;
         float deltaTime = 1.0f;
 
         SceneManager.getCurrentScene().init();
         SceneManager.getCurrentScene().start();
-        while(!shouldClose())
+
+        while(!glfwWindowShouldClose(window))
         {
             beginTime = Time.getTime();
-            SceneManager.getCurrentScene().renderer.prepare();
 
             SceneManager.getCurrentScene().update(deltaTime);
 
@@ -103,8 +105,9 @@ public class Window {
 
             endTime = Time.getTime();
             deltaTime = endTime - beginTime;
-            System.out.println(1.0f / deltaTime);
         }
+
+        close();
     }
 
     /**
@@ -118,19 +121,18 @@ public class Window {
         loop();
     }
 
-    public boolean shouldClose()
-    {
-        return glfwWindowShouldClose(window);
-    }
-
-
-    public void close()
+    private void close()
     {
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
 
         glfwTerminate();
         glfwSetErrorCallback(null).free();
+    }
+
+    public static long getWindow()
+    {
+        return get().window;
     }
 
     public void setFullscreen()
