@@ -15,7 +15,7 @@ public class Main {
 
     public void run()
     {
-        Scene scene = new LevelEditor();
+        Scene scene = new GameScene();
 
         SceneManager.addScene(scene);
 

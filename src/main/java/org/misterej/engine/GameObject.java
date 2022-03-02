@@ -88,6 +88,16 @@ public class GameObject {
         }
     }
 
+    public void setPos(Vector2f pos)
+    {
+        transfrom.position = pos;
+        SpriteRenderer spr = getComponent(SpriteRenderer.class);
+        if(spr != null)
+        {
+            spr.setDirtyFlag();
+        }
+    }
+
     public void imgui()
     {
         for(Component c : components)

@@ -1,10 +1,12 @@
 package org.misterej.engine;
 
+import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
+import org.misterej.engine.renderer.DebugDraw;
 import org.misterej.engine.util.Logger;
 import org.misterej.engine.util.Time;
 
@@ -92,11 +94,14 @@ public class Window {
 
         SceneManager.getCurrentScene().init();
         SceneManager.getCurrentScene().start();
+        DebugDraw.begin_frame();
 
         while(!glfwWindowShouldClose(window))
         {
             beginTime = Time.getTime();
+            SceneManager.getCurrentScene().renderer.prepare();
 
+            DebugDraw.draw();
             SceneManager.getCurrentScene().update(deltaTime);
 
             Input.update();

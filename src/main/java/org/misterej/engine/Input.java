@@ -84,7 +84,8 @@ public class Input {
 
         public static float getX()
         {
-            return (float)getInstance().xPos;
+            float x = (float)getInstance().xPos;
+            return x;
         }
 
         public static float getY()

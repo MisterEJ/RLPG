@@ -60,6 +60,14 @@ public abstract class Scene {
         }
     }
 
+    public void addTilemap(Tilemap tilemap)
+    {
+        for (GameObject go : tilemap.getTiles())
+        {
+            addGameObject(go);
+        }
+    }
+
     public abstract void update(float deltaTime);
     public abstract void init();
 }
