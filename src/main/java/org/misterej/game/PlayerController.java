@@ -28,8 +28,8 @@ public class PlayerController extends Script {
         if(Input.KeyboardListener.isKeyDown(GLFW.GLFW_KEY_S))
             gameObject.move(new Vector2f(0, speed * -deltaTime));
 
-        camera.position.x = gameObject.getTransform().position.x - (Config.w_width / 2f) + (gameObject.getTransform().size.x / 2f);
-        camera.position.y = gameObject.getTransform().position.y - (Config.w_height / 2f) + (gameObject.getTransform().size.y / 2f);
+       camera.position.x = gameObject.getTransform().position.x - (camera.getViewPort().x / 2f) + (gameObject.getTransform().size.x / 2f);
+       camera.position.y = gameObject.getTransform().position.y - (camera.getViewPort().y / 2f) + (gameObject.getTransform().size.y / 2f);
     }
 
     @Override

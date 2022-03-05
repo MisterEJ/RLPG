@@ -1,6 +1,9 @@
 package org.misterej.engine;
 
+import org.joml.Vector4f;
+
 import java.util.Arrays;
+import java.util.Vector;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -84,8 +87,27 @@ public class Input {
 
         public static float getX()
         {
-            float x = (float)getInstance().xPos;
-            return x;
+            return (float)getInstance().xPos;
+        }
+
+        public static float getXWorld()
+        {
+            float currentX = getX();
+            currentX = (currentX / Config.w_width) * 2 - 1;
+            Vector4f tmp = new Vector4f(currentX, 0, 0, 1);
+            tmp.mul(SceneManager.getCurrentScene().getCamera().getInverseProjection()).mul(SceneManager.getCurrentScene().getCamera().getInverseView());
+            currentX = tmp.x;
+            return currentX;
+        }
+
+        public static float getYWorld()
+        {
+            float currentY = Config.w_height - getY();
+            currentY = (currentY / Config.w_height) * 2 - 1;
+            Vector4f tmp = new Vector4f(0, currentY, 0, 1);
+            tmp.mul(SceneManager.getCurrentScene().getCamera().getInverseProjection()).mul(SceneManager.getCurrentScene().getCamera().getInverseView());
+            currentY = tmp.y;
+            return currentY;
         }
 
         public static float getY()

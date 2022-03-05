@@ -16,6 +16,7 @@ import static java.sql.Types.NULL;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.lwjgl.opengl.GL11.*;
 
 public class Window {
 
@@ -46,7 +47,7 @@ public class Window {
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-        window = glfwCreateWindow(Config.w_width, Config.w_height, title, 0, 0);
+        window = glfwCreateWindow(1280, 720, title, 0, 0);
         if(window == 0)
             throw new RuntimeException("Failed to create the GLFW window");
 
@@ -56,6 +57,11 @@ public class Window {
         glfwSetMouseButtonCallback(window, Input.MouseListener::mouseButtonCallback);
         glfwSetScrollCallback(window, Input.MouseListener::mouseScrollCallback);
         glfwSetKeyCallback(window, Input.KeyboardListener::keyCallback);
+        glfwSetWindowSizeCallback(window, (long window, int width, int height) -> {
+            Config.w_height = height;
+            Config.w_width = width;
+            glViewport(0,0, width, height);
+        });
 
         // Center the window
         try (MemoryStack stack = stackPush())
@@ -71,6 +77,7 @@ public class Window {
 
             glfwSetWindowPos(window, (vidMode.width() - pWidth.get(0)) / 2, (vidMode.height() - pHeight.get(0)) / 2);
         }
+
 
         // Make the opengl context current
         glfwMakeContextCurrent(window);
@@ -103,6 +110,11 @@ public class Window {
 
             DebugDraw.draw();
             SceneManager.getCurrentScene().update(deltaTime);
+
+            if(Input.KeyboardListener.iskeyPressed(GLFW_KEY_F11))
+            {
+                setFullscreen();
+            }
 
             Input.update();
             glfwSwapBuffers(window);

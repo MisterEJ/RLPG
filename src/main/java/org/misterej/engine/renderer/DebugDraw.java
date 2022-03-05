@@ -79,7 +79,6 @@ public class DebugDraw {
         glBindVertexArray(vaoID);
         glEnableVertexAttribArray(0);
 
-        glLineWidth(2.0f);
         glDrawArrays(GL_LINES, 0, lines.size() * 2);
 
         glDisableVertexAttribArray(0);
@@ -92,15 +91,4 @@ public class DebugDraw {
     {
         DebugDraw.lines.add(new Line2D(from, to));
     }
-
-    public static void debugPrint()
-    {
-        System.out.println("ArraySize:" + getVertexArraySize());
-        float[] arr = Arrays.copyOfRange(vertexArray, 0, getVertexArraySize());
-        for(int i = 0; i < arr.length; i += 3)
-        {
-            System.out.println("V:" + i/3 + " x:" + arr[i] + " y:" + arr[i+1] + " z:" + arr[+2]);
-        }
-    }
-
 }

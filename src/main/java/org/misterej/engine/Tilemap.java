@@ -25,7 +25,6 @@ public class Tilemap {
 
     public void load(String resourceName)
     {
-        //TODO: load tilemap from file
         try
         {
             FileInputStream fis = new FileInputStream(resourceName);

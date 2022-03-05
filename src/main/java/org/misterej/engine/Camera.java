@@ -3,9 +3,11 @@ package org.misterej.engine;
 import org.joml.*;
 
 public class Camera {
-    private Matrix4f projectionMatrix, viewMatrix;
+    private Matrix4f projectionMatrix, viewMatrix, inverseProjection, inverseView;
     public Vector2f position;
     private Vector2f viewPort;
+
+    private final float ASPECT = 16f / 9f;
 
     public Camera(Vector2f position, Vector2f viewPort)
     {
@@ -13,6 +15,8 @@ public class Camera {
         this.projectionMatrix = new Matrix4f();
         this.viewMatrix = new Matrix4f();
         this.viewPort = new Vector2f();
+        this.inverseProjection = new Matrix4f();
+        this.inverseView = new Matrix4f();
         adjustProjection();
     }
 
@@ -21,10 +25,16 @@ public class Camera {
         this.position = position;
         this.projectionMatrix = new Matrix4f();
         this.viewMatrix = new Matrix4f();
-        this.viewPort = new Vector2f(1280.0f, 720.0f);
+        this.viewPort = new Vector2f(Config.view_width, Config.view_height);
+        this.inverseProjection = new Matrix4f();
+        this.inverseView = new Matrix4f();
         adjustProjection();
     }
 
+
+    public Vector2f getViewPort() {
+        return viewPort;
+    }
 
     /**
      * Adjust the projection matrix automatically called when setting a view port
@@ -33,6 +43,7 @@ public class Camera {
     {
         projectionMatrix.identity();
         projectionMatrix.ortho(0.0f, viewPort.x, 0.0f, viewPort.y, 0.0f, 100.0f);
+        projectionMatrix.invert(inverseProjection);
     }
 
     /**
@@ -54,6 +65,8 @@ public class Camera {
         this.viewMatrix = viewMatrix.lookAt(new Vector3f(position.x, position.y, 0.0f),
                                             cameraFront.add(position.x,position.y,0.0f),
                                             cameraUp);
+
+        viewMatrix.invert(inverseView);
         return this.viewMatrix;
     }
 
@@ -62,4 +75,11 @@ public class Camera {
         return this.projectionMatrix;
     }
 
+    public Matrix4f getInverseProjection() {
+        return inverseProjection;
+    }
+
+    public Matrix4f getInverseView() {
+        return inverseView;
+    }
 }

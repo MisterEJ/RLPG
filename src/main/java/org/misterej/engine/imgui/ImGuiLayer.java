@@ -49,6 +49,11 @@ public class ImGuiLayer {
         }
         ImGui.text(fps + " FPS");
         ImGui.end();
+        for(int i = 0; i < 20; i++)
+        {
+            ImGui.button("button" + i);
+            ImGui.sameLine();
+        }
 
         ImGui.showDemoWindow();
 

@@ -24,17 +24,11 @@ public class GameScene extends Scene {
         }
 
         this.renderer.render();
-
-        if(Input.KeyboardListener.iskeyPressed(GLFW_KEY_H))
-        {
-            DebugDraw.debugPrint();
-            System.out.println("H");
-        }
     }
 
     @Override
     public void init() {
-        this.camera = new Camera(new Vector2f());
+        this.camera = new Camera(new Vector2f(100,100));
         loadResources();
 
         SpriteSheet spriteSheet = AssetPool.getSpriteSheet("assets/textures/0x72_16x16DungeonTileset.v1.png");
@@ -47,7 +41,7 @@ public class GameScene extends Scene {
         go.addComponent(new ScriptComponent(new PlayerController(go)));
         this.addGameObject(go);
 
-        GameObject go1 = new GameObject("Player",new Transform(new Vector2f(200,200), new Vector2f(64,64), new Vector2f(1,1)));
+        GameObject go1 = new GameObject("Player",new Transform(new Vector2f(200,-200), new Vector2f(64,64), new Vector2f(1,1)));
         go1.addComponent(new SpriteRenderer(spriteSheet.getSprite(16)));
         go1.addComponent(new ScriptComponent(new TilePosScript(go1)));
         this.addGameObject(go1);
