@@ -4,6 +4,7 @@ import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Vector2;
 import org.jbox2d.common.Vec2;
 import org.joml.Vector2f;
+import org.lwjgl.glfw.GLFW;
 import org.misterej.engine.*;
 import org.misterej.engine.components.*;
 import org.misterej.engine.dyn4j.components.BoxCollider;
@@ -18,18 +19,30 @@ import org.misterej.engine.util.AssetPool;
 
 public class GameScene extends Scene {
 
-    Tilemap tilemap;
-    GameObject player;
+    private Tilemap tilemap;
+    private GameObject player;
+
+    private final String level;
+
+    public GameScene(String level)
+    {
+        this.level = level;
+    }
 
     @Override
     public void update(float deltaTime) {
-        this.physics2D.update(deltaTime);
 
         for(GameObject go : this.gameObjects)
         {
             go.update(deltaTime);
         }
 
+        if(Input.KeyboardListener.iskeyPressed(GLFW.GLFW_KEY_F1))
+        {
+            SceneManager.setScene(new LevelEditor(level));
+        }
+
+        this.physics2D.update(deltaTime);
         this.renderer.render();
     }
 
@@ -40,7 +53,7 @@ public class GameScene extends Scene {
         SpriteSheet spriteSheet = AssetPool.getSpriteSheet("assets/textures/sprites.png");
 
         tilemap = new Tilemap(0.5f,0.5f, spriteSheet);
-        tilemap.load("assets/levels/lvl1.csv");
+        tilemap.load(level);
         this.addTilemap(tilemap);
 
 
@@ -53,12 +66,7 @@ public class GameScene extends Scene {
                 go.addComponent(new BoxCollider());
                 go.getComponent(RigidBody2D.class).setMass(MassType.FIXED_ANGULAR_VELOCITY);
                 go.getComponent(BoxCollider.class).setSize(new Vector2(go.transform.size.x, go.transform.size.y));
-//                go.addComponent(new RigidBody2D());
-//                go.getComponent(RigidBody2D.class).setMass(10);
-//                go.getComponent(RigidBody2D.class).setFixedRotation(true);
-//                go.addComponent(new CircleCollider());
-//                go.getComponent(CircleCollider.class).setRadius((go.transform.size.y / 2f));
-//                go.getComponent(CircleCollider.class);
+
                 player = go;
                 player.setName("Player");
             }
@@ -70,11 +78,9 @@ public class GameScene extends Scene {
                 go.getComponent(RigidBody2D.class).setMass(MassType.INFINITE);
                 go.addComponent(new BoxCollider());
                 go.getComponent(BoxCollider.class).setSize(new Vector2(go.transform.size.x, go.transform.size.y));
-//                go.addComponent(new Box2DCollider());
-//                go.getComponent(Box2DCollider.class).setHalfSize(new Vector2f(go.transform.size));
-//                go.getComponent(Box2DCollider.class).setOrigin(new Vector2f(go.transform.size).div(2));
             }
         }
+
         player.addComponent(new ScriptComponent(new PlayerController(player)));
     }
 

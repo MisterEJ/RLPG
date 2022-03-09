@@ -18,12 +18,19 @@ import java.util.ArrayList;
 
 public class LevelEditor extends Scene{
 
-    private ImGuiLayer imguilayer;
     private Tilemap tilemap;
 
     private int selectedSpriteID = -1;
     private GameObject selectionObject;
     private GameObject selectedObject;
+    private String levelName;
+
+    public LevelEditor(String level)
+    {
+        this.levelName = level;
+    }
+
+    public LevelEditor(){}
 
     @Override
     public void update(float deltaTime) {
@@ -32,7 +39,6 @@ public class LevelEditor extends Scene{
             go.update(deltaTime);
         }
         renderer.render();
-        imguilayer.update(deltaTime);
         input();
 
         if(selectedSpriteID != -1)
@@ -61,13 +67,16 @@ public class LevelEditor extends Scene{
     @Override
     public void init() {
 
-        imguilayer = new ImGuiLayer(Window.getWindow());
-        imguilayer.init();
-
         loadResources();
 
         SpriteSheet spriteSheet = AssetPool.getSpriteSheet("assets/textures/sprites.png");
         tilemap = new Tilemap(1f,1f, spriteSheet);
+
+        if(levelName != null)
+        {
+            tilemap.load(levelName);
+            this.addTilemap(tilemap);
+        }
 
         //DebugLines
         for(int i = -200; i < 200; i++)
@@ -85,9 +94,32 @@ public class LevelEditor extends Scene{
 
     ImString filename = new ImString();
     ImString filename2 = new ImString();
+    ImString level = new ImString();
     @Override
     public void imgui()
     {
+        ImGui.begin("Runtime");
+        ImGui.inputText("Level to play:", level);
+        if(ImGui.button("Play"))
+        {
+            if(!level.get().isEmpty())
+            {
+                String filepath = "assets/levels/";
+                if(!level.get().endsWith(".csv"))
+                {
+                    filepath += level.get() + ".csv";
+                }
+                else
+                {
+                    filepath += level.get();
+                }
+
+                SceneManager.setScene(new GameScene(filepath));
+                DebugDraw.removeAllLines();
+            }
+        }
+        ImGui.end();
+
         ImGui.begin("Info");
         for(GameObject gameObject : gameObjects)
         {
@@ -108,20 +140,23 @@ public class LevelEditor extends Scene{
         ImGui.inputText("load filename", filename2);
         if(ImGui.button("Load Tilemap"))
         {
-            tilemap.removeAllTiles();
-
-            String filepath = "assets/levels/";
-            if(!filename2.get().endsWith(".csv"))
+            if(!filename2.get().isEmpty())
             {
-                filepath += filename2.get() + ".csv";
-            }
-            else
-            {
-                filepath += filename2.get();
-            }
+                tilemap.removeAllTiles();
 
-            tilemap.load(filepath);
-            this.addTilemap(tilemap);
+                String filepath = "assets/levels/";
+                if(!filename2.get().endsWith(".csv"))
+                {
+                    filepath += filename2.get() + ".csv";
+                }
+                else
+                {
+                    filepath += filename2.get();
+                }
+
+                tilemap.load(filepath);
+                this.addTilemap(tilemap);
+            }
         }
 
         if(ImGui.button("New Tilemap"))

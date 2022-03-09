@@ -115,4 +115,9 @@ public class DebugDraw {
         addLine2D(vertices[1], vertices[2]);
         addLine2D(vertices[2], vertices[3]);
     }
+
+    public static void removeAllLines()
+    {
+        lines.clear();
+    }
 }

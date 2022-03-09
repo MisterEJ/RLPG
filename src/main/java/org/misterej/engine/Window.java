@@ -6,6 +6,7 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
+import org.misterej.engine.imgui.ImGuiLayer;
 import org.misterej.engine.physics2d.components.RigidBody2D;
 import org.misterej.engine.renderer.DebugDraw;
 import org.misterej.engine.util.Logger;
@@ -25,6 +26,7 @@ public class Window {
     {
         this.title = name;
     }
+    private ImGuiLayer imguilayer;
 
     private static Window instance = new Window("RLPG");
 
@@ -91,6 +93,9 @@ public class Window {
 
         // Show window
         glfwShowWindow(window);
+
+        imguilayer = new ImGuiLayer(Window.getWindow());
+        imguilayer.init();
     }
 
     private void loop()
@@ -100,8 +105,11 @@ public class Window {
         float endTime;
         float deltaTime = 1.0f;
 
-        SceneManager.getCurrentScene().init();
-        SceneManager.getCurrentScene().start();
+        if(SceneManager.getCurrentScene() == null)
+        {
+            SceneManager.setScene(new LevelEditor());
+        }
+
         DebugDraw.begin_frame();
 
         while(!glfwWindowShouldClose(window))
@@ -111,6 +119,7 @@ public class Window {
 
             DebugDraw.draw();
             SceneManager.getCurrentScene().update(deltaTime);
+            imguilayer.update(deltaTime);
 
             if(Input.KeyboardListener.iskeyPressed(GLFW_KEY_F11))
             {
