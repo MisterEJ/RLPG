@@ -12,10 +12,10 @@ import java.util.List;
 public class Tilemap {
     private List<GameObject> tiles;
     private SpriteSheet tileSheet;
-    private int cell_width;
-    private int cell_height;
+    private float cell_width;
+    private float cell_height;
 
-    public Tilemap(int cell_width, int cell_height, SpriteSheet spritesheet)
+    public Tilemap(float cell_width, float cell_height, SpriteSheet spritesheet)
     {
         this.cell_width = cell_width;
         this.cell_height = cell_height;
@@ -50,7 +50,6 @@ public class Tilemap {
                     y = Integer.parseInt(chars[i+1]);
                     index = Integer.parseInt(chars[i+2]);
                     add_tile(x,y,index);
-                    System.out.println(x + " " + y);
                 }
             } else
             {
@@ -58,7 +57,33 @@ public class Tilemap {
             }
         } catch(Exception e)
         {
+            e.printStackTrace();
             assert false : "(Tilemap) Cannot load resource '" + resourceName + "'";
+        }
+    }
+
+    public void save(String filename)
+    {
+        if(!filename.endsWith(".csv"))
+        {
+            filename += ".csv";
+            System.out.println(filename);
+        }
+
+        String resourceName = "assets/levels/" + filename;
+        try
+        {
+            FileWriter fw = new FileWriter(resourceName);
+            for(GameObject tile : tiles)
+            {
+                fw.write((int)(tile.getTransform().position.x / cell_width) + "," + (int)(tile.getTransform().position.y / cell_height) + "," + tile.getComponent(SpriteRenderer.class).getSprite().getId() + ",");
+            }
+            fw.close();
+            Logger.log("Saved tilemap to '" + resourceName);
+
+        } catch(Exception e)
+        {
+            assert false : "(Tilemap) Cannot create/open file '" + resourceName + "'";
         }
     }
 
@@ -69,16 +94,43 @@ public class Tilemap {
         tiles.add(go);
     }
 
+    public void add_tile(float x, float y, int index)
+    {
+        x /= cell_width;
+        y /= cell_height;
+        GameObject go = new GameObject("tile@x" + x + "y" + y + "i" + index, new Transform(new Vector2f(x * cell_width,y*cell_height), new Vector2f(cell_width, cell_height)));
+        go.addComponent(new SpriteRenderer(tileSheet.getSprite(index)));
+        tiles.add(go);
+    }
+
+    public void remove_tile(GameObject go)
+    {
+        if(tiles.contains(go))
+        {
+            SceneManager.getCurrentScene().removeGameObject(go);
+            tiles.remove(go);
+        }
+    }
+
+    public void removeAllTiles()
+    {
+        for(GameObject tile : tiles)
+        {
+            SceneManager.getCurrentScene().removeGameObject(tile);
+        }
+        tiles = new ArrayList<>();
+    }
+
     public List<GameObject> getTiles()
     {
         return this.tiles;
     }
 
-    public int getCellHeight() {
+    public float getCellHeight() {
         return cell_height;
     }
 
-    public int getCellWidth()
+    public float getCellWidth()
     {
         return cell_width;
     }

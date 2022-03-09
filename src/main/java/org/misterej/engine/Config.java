@@ -6,7 +6,7 @@ public final class Config {
     public static int w_width = 1280;
     public static int w_height = 720;
 
-    public static float view_width = 1280;
-    public static float view_height = 720;
+    public static float view_width = 16;
+    public static float view_height = 9;
 
 }

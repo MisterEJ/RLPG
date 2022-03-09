@@ -76,4 +76,9 @@ public class SpriteRenderer extends Component {
         this.sprite = sprite;
         dirty = true;
     }
+
+    public Sprite getSprite()
+    {
+        return sprite;
+    }
 }

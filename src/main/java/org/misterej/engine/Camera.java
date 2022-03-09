@@ -7,7 +7,7 @@ public class Camera {
     public Vector2f position;
     private Vector2f viewPort;
 
-    private final float ASPECT = 16f / 9f;
+    public final float ASPECT = 16f/9f;
 
     public Camera(Vector2f position, Vector2f viewPort)
     {

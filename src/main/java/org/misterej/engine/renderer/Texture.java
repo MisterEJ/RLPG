@@ -86,4 +86,9 @@ public class Texture {
     {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
+
+    public int getTexID()
+    {
+        return texID;
+    }
 }

@@ -7,6 +7,10 @@ public class Sprite {
 
     private Texture texture;
     private Vector2f[] texCoords;
+    private int id = 0;
+
+    private float width, height;
+
     public Sprite(Texture texture)
     {
         this.texture = texture;
@@ -30,7 +34,36 @@ public class Sprite {
         return this.texture;
     }
 
+    public int getTexID()
+    {
+        return texture.getTexID();
+    }
+
     public Vector2f[] getTexCoords() {
         return this.texCoords;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+         this.id = id;
     }
 }

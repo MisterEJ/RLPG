@@ -6,6 +6,7 @@ import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import org.lwjgl.glfw.GLFW;
 import org.misterej.engine.GameObject;
+import org.misterej.engine.SceneManager;
 
 public class ImGuiLayer {
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
@@ -49,13 +50,12 @@ public class ImGuiLayer {
         }
         ImGui.text(fps + " FPS");
         ImGui.end();
+
         for(int i = 0; i < 20; i++)
         {
             ImGui.button("button" + i);
             ImGui.sameLine();
         }
-
-        ImGui.showDemoWindow();
 
         if(selectedObject != null)
         {
@@ -71,7 +71,7 @@ public class ImGuiLayer {
         imGuiGlfw.newFrame();
         ImGui.newFrame();
 
-        imgui(deltaTime);
+        SceneManager.getCurrentScene().imgui();
 
         ImGui.render();
         imGuiGl3.renderDrawData(ImGui.getDrawData());

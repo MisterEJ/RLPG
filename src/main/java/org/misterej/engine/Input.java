@@ -21,6 +21,8 @@ public class Input {
         private double scrollX, scrollY;
         private double xPos, yPos, lastX, lastY;
         private boolean[] mouseButtonPressed = new boolean[3];
+        private boolean[] mouseButtonReleased = new boolean[3];
+        private boolean[] mouseButtonDown = new boolean[3];
         private boolean isDragging;
 
         private MouseListener()
@@ -58,13 +60,15 @@ public class Input {
                 if(button < getInstance().mouseButtonPressed.length)
                 {
                     getInstance().mouseButtonPressed[button] = true;
+                    getInstance().mouseButtonDown[button] = true;
                 }
             }
             else if(action == GLFW_RELEASE)
             {
                 if(button < getInstance().mouseButtonPressed.length)
                 {
-                    getInstance().mouseButtonPressed[button] = false;
+                    getInstance().mouseButtonReleased[button] = true;
+                    getInstance().mouseButtonDown[button] = false;
                     getInstance().isDragging = false;
                 }
             }
@@ -82,6 +86,9 @@ public class Input {
             getInstance().scrollX = 0.0;
             getInstance().lastX = getInstance().xPos;
             getInstance().lastY = getInstance().yPos;
+
+            Arrays.fill(getInstance().mouseButtonReleased, false);
+            Arrays.fill(getInstance().mouseButtonPressed, false);
 
         }
 
@@ -147,6 +154,22 @@ public class Input {
             else
                 return false;
         }
+
+        public static boolean isMouseButtonDown(int button)
+        {
+            if(button < getInstance().mouseButtonDown.length)
+                return getInstance().mouseButtonDown[button];
+            else
+                return false;
+        }
+
+        public static boolean isMouseButtonReleased(int button)
+        {
+            if(button < getInstance().mouseButtonReleased.length)
+                return getInstance().mouseButtonReleased[button];
+            else
+                return false;
+        }
     }
 
     public static class KeyboardListener
@@ -184,9 +207,6 @@ public class Input {
 
         private static void resetKeys()
         {
-            /*
-                Resets keyReleased and keyPressed arrays after every frame
-             */
             Arrays.fill(getInstance().keyReleased, false);
             Arrays.fill(getInstance().keyPressed, false);
         }

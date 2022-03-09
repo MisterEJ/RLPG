@@ -6,25 +6,31 @@ import org.misterej.engine.components.SpriteRenderer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameObject {
+public class GameObject{
 
-    private final String name;
+    private String name;
     private List<Component> components;
 
-    private Transform transfrom;
+    public Transform transform;
+    private final int id;
+    private static int nextID = 0;
 
     public GameObject (String name)
     {
+        this.id = nextID;
+        nextID++;
         this.name = name;
-        this.components = new ArrayList<>();
-        this.transfrom = new Transform();
+        components = new ArrayList<>();
+        this.transform = new Transform();
     }
 
     public GameObject (String name, Transform transform)
     {
+        this.id = nextID;
+        nextID++;
         this.name = name;
-        this.components = new ArrayList<>();
-        this.transfrom = transform;
+        components = new ArrayList<>();
+        this.transform = transform;
     }
 
     /**
@@ -80,7 +86,7 @@ public class GameObject {
 
     public void move(Vector2f distance)
     {
-        transfrom.position.add(distance);
+        transform.position.add(distance);
         SpriteRenderer spr = getComponent(SpriteRenderer.class);
         if(spr != null)
         {
@@ -90,7 +96,7 @@ public class GameObject {
 
     public void setPos(Vector2f pos)
     {
-        transfrom.position = pos;
+        transform.position = pos;
         SpriteRenderer spr = getComponent(SpriteRenderer.class);
         if(spr != null)
         {
@@ -108,7 +114,7 @@ public class GameObject {
 
     public Transform getTransform()
     {
-        return transfrom;
+        return transform;
     }
 
     /**
@@ -133,5 +139,54 @@ public class GameObject {
         }
     }
 
+    public float getX()
+    {
+        return transform.position.x;
+    }
 
+    public float getY()
+    {
+        return transform.position.y;
+    }
+
+    public Vector2f getPosition()
+    {
+        return transform.position;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public void setDirtyFlag()
+    {
+        SpriteRenderer spr = getComponent(SpriteRenderer.class);
+        if(spr != null)
+        {
+            spr.setDirtyFlag();
+        }
+    }
+
+    public void rotate(float degrees)
+    {
+        transform.rotation += degrees;
+
+        if(transform.rotation > 360f)
+            transform.rotation -= 360f;
+
+        if(transform.rotation < 0)
+            transform.rotation += 360f;
+
+        setDirtyFlag();
+    }
 }

@@ -2,7 +2,7 @@ package org.misterej.engine.components;
 
 import org.misterej.engine.Component;
 
-public class ScriptComponent extends Component {
+public class ScriptComponent extends Component{
 
     private Script script;
 
