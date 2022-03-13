@@ -1,7 +1,8 @@
 package org.misterej.engine.util;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+
+// TODO change to static class remove singleton
+
 import java.io.FileWriter;
 import java.io.IOException;
 

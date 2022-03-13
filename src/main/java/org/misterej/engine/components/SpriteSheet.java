@@ -11,8 +11,11 @@ public class SpriteSheet {
     private Texture texture;
     private List<Sprite> sprites;
 
+    private Vector2f spritedimensions;
+
     public SpriteSheet(Texture texture, int spriteWidth, int spriteHeight, int numSprites, int spacing)
     {
+        this.spritedimensions = new Vector2f(spriteWidth, spriteHeight);
         this.sprites = new ArrayList<>();
         this.texture = texture;
         int currentX = 0;
@@ -60,6 +63,11 @@ public class SpriteSheet {
 
     public Texture getTexture() {
         return texture;
+    }
+
+    public Vector2f getSpritedimensions()
+    {
+        return spritedimensions;
     }
 
 }

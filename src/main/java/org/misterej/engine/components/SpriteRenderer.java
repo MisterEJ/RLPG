@@ -3,6 +3,7 @@ package org.misterej.engine.components;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.misterej.engine.Component;
+import org.misterej.engine.SceneManager;
 import org.misterej.engine.renderer.Color;
 import org.misterej.engine.renderer.Texture;
 import org.misterej.engine.util.Logger;
@@ -11,6 +12,7 @@ public class SpriteRenderer extends Component {
 
     private Color color;
     private Sprite sprite;
+    public int zIndex = 0;
 
     private boolean dirty = false;
 

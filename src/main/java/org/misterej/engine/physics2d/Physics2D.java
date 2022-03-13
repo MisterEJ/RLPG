@@ -1,7 +1,8 @@
 package org.misterej.engine.physics2d;
 
-import org.jbox2d.callbacks.DebugDraw;
+import org.jbox2d.collision.shapes.ChainShape;
 import org.jbox2d.collision.shapes.CircleShape;
+import org.jbox2d.collision.shapes.EdgeShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
@@ -12,7 +13,12 @@ import org.misterej.engine.Transform;
 import org.misterej.engine.components.SpriteRenderer;
 import org.misterej.engine.physics2d.components.Box2DCollider;
 import org.misterej.engine.physics2d.components.CircleCollider;
+import org.misterej.engine.physics2d.components.FloorCollider;
 import org.misterej.engine.physics2d.components.RigidBody2D;
+import org.misterej.engine.renderer.DebugDraw;
+
+import java.util.Collections;
+import java.util.List;
 
 public class Physics2D {
 
@@ -24,6 +30,11 @@ public class Physics2D {
 
     private final int velocityIterations = 8;
     private final int positionIterations = 3;
+
+    public Physics2D()
+    {
+        world.setContactListener(new ContactListener());
+    }
 
     public void add(GameObject go)
     {
@@ -47,13 +58,13 @@ public class Physics2D {
                 case Dynamic: bodyDef.type = BodyType.DYNAMIC; break;
             }
 
-
             Body body = this.world.createBody(bodyDef);
             body.m_mass = rb.getMass();
             rb.setRawBody(body);
 
             CircleCollider circleCollider;
             Box2DCollider box2DCollider;
+            FloorCollider floorCollider;
 
             if((circleCollider = go.getComponent(CircleCollider.class)) != null)
             {
@@ -62,24 +73,67 @@ public class Physics2D {
             else if( (box2DCollider = go.getComponent(Box2DCollider.class)) != null)
             {
                 addBox2DCollider(rb, box2DCollider);
+            } else if((floorCollider = go.getComponent(FloorCollider.class)) != null)
+            {
+                addFloorCollider(rb, floorCollider);
             }
         }
     }
 
-    public void addBox2DCollider(RigidBody2D rb, Box2DCollider boxCollider) {
+    private void addFloorCollider(RigidBody2D rb, FloorCollider floorCollider)
+    {
+        Body body = rb.getRawBody();
+        assert body != null : "Raw body must not be null";
+
+        ChainShape shape = new ChainShape();
+        float size = rb.gameObject.transform.size.x;
+        Vec2 offset = new Vec2(-size/2, -size/2);
+
+        Vec2[] vr = new Vec2[4];
+        vr[0] = new Vec2(0, 0).add(offset);
+        vr[1] = new Vec2(size, 0).add(offset);
+        vr[2] = new Vec2(size, size).add(offset);
+        vr[3] = new Vec2(0, size).add(offset);
+
+        shape.createLoop(vr, vr.length);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1;
+        fixtureDef.userData = floorCollider.gameObject;
+        body.createFixture(fixtureDef);
+
+    }
+
+    private void addBox2DCollider(RigidBody2D rb, Box2DCollider boxCollider) {
         Body body = rb.getRawBody();
         assert body != null : "Raw body must not be null";
 
         PolygonShape shape = new PolygonShape();
-        Vector2f halfSize = new Vector2f(boxCollider.getHalfSize()).mul(0.5f);
+        Vector2f halfSize = new Vector2f(boxCollider.getHalfSize());
         Vector2f offset = boxCollider.getOffset();
         Vector2f origin = new Vector2f(boxCollider.getOrigin());
-        shape.setAsBox(halfSize.x, halfSize.y, new Vec2(offset.x, offset.y), 0);
+        final float SKIN_OFFSET = 0.015f;
+        shape.setAsBox(halfSize.x - SKIN_OFFSET, halfSize.y - SKIN_OFFSET, new Vec2(offset.x, offset.y), 0);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
         fixtureDef.userData = boxCollider.gameObject;
+        body.createFixture(fixtureDef);
+    }
+
+    private void addCircleCollider(RigidBody2D rb, CircleCollider circleCollider) {
+        Body body = rb.getRawBody();
+        assert body != null : "Raw body must not be null";
+
+        CircleShape shape = new CircleShape();
+        shape.setRadius(circleCollider.getRadius());
+        shape.m_p.set(circleCollider.getOffset().x, circleCollider.getOffset().y);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1.0f;
+        fixtureDef.userData = circleCollider.gameObject;
         body.createFixture(fixtureDef);
     }
 
@@ -94,21 +148,6 @@ public class Physics2D {
                 rb.setRawBody(null);
             }
         }
-    }
-
-    public void addCircleCollider(RigidBody2D rb, CircleCollider circleCollider) {
-        Body body = rb.getRawBody();
-        assert body != null : "Raw body must not be null";
-
-        CircleShape shape = new CircleShape();
-        shape.setRadius(circleCollider.getRadius());
-        shape.m_p.set(circleCollider.getOffset().x, circleCollider.getOffset().y);
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f;
-        fixtureDef.userData = circleCollider.gameObject;
-        body.createFixture(fixtureDef);
     }
 
     public World getWorld()
@@ -133,19 +172,18 @@ public class Physics2D {
         return callback;
     }
 
-//    public static boolean checkOnGround(GameObject gameObject, float innerPlayerWidth, float height) {
-//        Vector2f raycastBegin = new Vector2f(gameObject.transform.position);
-//        raycastBegin.sub(innerPlayerWidth / 2.0f, 0.0f);
-//        Vector2f raycastEnd = new Vector2f(raycastBegin).add(0.0f, height);
-//
-//        RaycastInfo info = SceneManager.getCurrentScene().getPhysics().raycast(gameObject, raycastBegin, raycastEnd);
-//
-//        Vector2f raycast2Begin = new Vector2f(raycastBegin).add(innerPlayerWidth, 0.0f);
-//        Vector2f raycast2End = new Vector2f(raycastEnd).add(innerPlayerWidth, 0.0f);
-//        RaycastInfo info2 = SceneManager.getCurrentScene().getPhysics().raycast(gameObject, raycast2Begin, raycast2End);
-//
-//        return (info.hit && info.hitObject != null && info.hitObject.getComponent(SpriteRenderer.class).getSprite().getId() == 2) ||
-//                (info2.hit && info2.hitObject != null && info2.hitObject.getComponent(SpriteRenderer.class).getSprite().getId() == 2);
-//    }
+    public static boolean checkOnGround(GameObject gameObject, float innerPlayerWidth, float height) {
+        Vector2f raycastBegin = new Vector2f(gameObject.transform.position);
+        Vector2f raycastEnd = new Vector2f(raycastBegin).sub(0, 0.26f);
+
+        RaycastInfo info = SceneManager.getCurrentScene().getPhysics().raycast(gameObject, raycastBegin, raycastEnd);
+
+        Vector2f raycast2Begin = new Vector2f(raycastBegin).add(innerPlayerWidth, 0.0f);
+        Vector2f raycast2End = new Vector2f(raycastEnd).add(innerPlayerWidth, 0.0f);
+        RaycastInfo info2 = SceneManager.getCurrentScene().getPhysics().raycast(gameObject, raycast2Begin, raycast2End);
+
+        return (info.hit && info.hitObject != null && info.hitObject.getComponent(SpriteRenderer.class).getSprite().getId() == 2) ||
+                (info2.hit && info2.hitObject != null && info2.hitObject.getComponent(SpriteRenderer.class).getSprite().getId() == 2);
+    }
 
 }

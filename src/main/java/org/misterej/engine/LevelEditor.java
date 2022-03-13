@@ -43,7 +43,7 @@ public class LevelEditor extends Scene{
 
         if(selectedSpriteID != -1)
         {
-            SpriteSheet spriteSheet = AssetPool.getSpriteSheet("assets/textures/sprites.png");
+            SpriteSheet spriteSheet = AssetPool.getSpriteSheet("assets/textures/DeepForestTileset.png");
             if(selectionObject != null)
             {
                 selectionObject.getComponent(SpriteRenderer.class).setSprite(spriteSheet.getSprite(selectedSpriteID));
@@ -69,7 +69,7 @@ public class LevelEditor extends Scene{
 
         loadResources();
 
-        SpriteSheet spriteSheet = AssetPool.getSpriteSheet("assets/textures/sprites.png");
+        SpriteSheet spriteSheet = AssetPool.getSpriteSheet("assets/textures/DeepForestTileset.png");
         tilemap = new Tilemap(1f,1f, spriteSheet);
 
         if(levelName != null)
@@ -88,6 +88,7 @@ public class LevelEditor extends Scene{
         GameObject tile = new GameObject("Tile", new Transform(new Vector2f(0,0), new Vector2f(1,1)));
         tile.addComponent(new ScriptComponent(new TilePosScript(tile, 1, 1)));
         tile.addComponent(new SpriteRenderer(new Sprite(AssetPool.getTexture("assets/textures/selection.png"))));
+        tile.getComponent(SpriteRenderer.class).zIndex = 1;
         selectionObject = tile;
         this.addGameObject(tile);
     }
@@ -98,28 +99,6 @@ public class LevelEditor extends Scene{
     @Override
     public void imgui()
     {
-        ImGui.begin("Runtime");
-        ImGui.inputText("Level to play:", level);
-        if(ImGui.button("Play"))
-        {
-            if(!level.get().isEmpty())
-            {
-                String filepath = "assets/levels/";
-                if(!level.get().endsWith(".csv"))
-                {
-                    filepath += level.get() + ".csv";
-                }
-                else
-                {
-                    filepath += level.get();
-                }
-
-                SceneManager.setScene(new GameScene(filepath));
-                DebugDraw.removeAllLines();
-            }
-        }
-        ImGui.end();
-
         ImGui.begin("Info");
         for(GameObject gameObject : gameObjects)
         {
@@ -164,10 +143,30 @@ public class LevelEditor extends Scene{
             tilemap.removeAllTiles();
         }
 
+        ImGui.inputText("Level to play:", level);
+        if(ImGui.button("Play"))
+        {
+            if(!level.get().isEmpty())
+            {
+                String filepath = "assets/levels/";
+                if(!level.get().endsWith(".csv"))
+                {
+                    filepath += level.get() + ".csv";
+                }
+                else
+                {
+                    filepath += level.get();
+                }
+
+                SceneManager.setScene(new GameScene(filepath));
+                DebugDraw.removeAllLines();
+            }
+        }
+
         ImGui.end();
 
-        float scale = 4;
-        SpriteSheet spriteSheet = AssetPool.getSpriteSheet("assets/textures/sprites.png");
+        float scale = 3;
+        SpriteSheet spriteSheet = AssetPool.getSpriteSheet("assets/textures/DeepForestTileset.png");
 
         ImGui.begin("Tiles");
 
@@ -182,7 +181,9 @@ public class LevelEditor extends Scene{
                 selectedSpriteID = i;
             }
             ImGui.popID();
-            ImGui.sameLine();
+
+            if(ImGui.getItemRectMaxX() + (sprite.getWidth()) < ImGui.getContentRegionMaxX())
+                ImGui.sameLine();
         }
 
         ImGui.end();
@@ -193,8 +194,8 @@ public class LevelEditor extends Scene{
         // Drag camera
         if(Input.MouseListener.isMouseButtonDown(2))
         {
-            camera.position.x += Input.MouseListener.getDx() * 0.01;
-            camera.position.y -= Input.MouseListener.getDy() * 0.01;
+            camera.position.x += Input.MouseListener.getDx() * camera.getViewPort().x * 0.001;
+            camera.position.y -= Input.MouseListener.getDy() * camera.getViewPort().x * 0.001;
         }
 
         // Zoom
@@ -244,6 +245,10 @@ public class LevelEditor extends Scene{
 
         AssetPool.addSpriteSheet("assets/textures/sprites.png", new SpriteSheet(
                 AssetPool.getTexture("assets/textures/sprites.png"), 16, 16, 3, 0
+        ));
+
+        AssetPool.addSpriteSheet("assets/textures/DeepForestTileset.png", new SpriteSheet(
+                AssetPool.getTexture("assets/textures/DeepForestTileset.png"), 16, 16, 80, 0
         ));
     }
 }

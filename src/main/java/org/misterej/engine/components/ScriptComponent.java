@@ -20,4 +20,8 @@ public class ScriptComponent extends Component{
     public void start() {
         script.start();
     }
+
+    public Script getScript() {
+        return script;
+    }
 }

@@ -7,7 +7,7 @@ import org.misterej.engine.physics2d.enums.BodyType;
 
 public class RigidBody2D extends Component {
 
-    MassType mass = MassType.NORMAL;
+    private MassType mass = MassType.NORMAL;
 
     private Body rawBody;
 

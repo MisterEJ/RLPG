@@ -16,7 +16,7 @@ public abstract class Scene {
     protected Camera camera = new Camera(new Vector2f());
 
     protected List<GameObject> gameObjects = new ArrayList<>();
-    protected PhysicsD physics2D = new PhysicsD();
+    protected Physics2D physics2D = new Physics2D();
     private boolean isRunning = false;
     
     public int id;
@@ -135,9 +135,13 @@ public abstract class Scene {
     public List<GameObject> getGameObjects() {
         return gameObjects;
     }
-    public PhysicsD getPhysics()
+    public Physics2D getPhysics()
     {
         return physics2D;
+    }
+    public Renderer getRenderer()
+    {
+        return renderer;
     }
 
     public void imgui(){};

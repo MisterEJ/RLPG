@@ -1,22 +1,20 @@
 package org.misterej.game;
 
 
-import org.dyn4j.dynamics.Body;
-import org.dyn4j.dynamics.BodyFixture;
-import org.dyn4j.geometry.Rotation;
-import org.dyn4j.geometry.Transform;
-import org.dyn4j.geometry.Vector2;
-
-import org.dyn4j.world.result.RaycastResult;
+import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.contacts.Contact;
 import org.joml.Vector2f;
 
 import org.lwjgl.glfw.GLFW;
 import org.misterej.engine.*;
-import org.misterej.engine.components.Script;
-import org.misterej.engine.components.SpriteRenderer;
-import org.misterej.engine.dyn4j.components.RigidBody2D;
-
-import java.util.List;
+import org.misterej.engine.components.*;
+import org.misterej.engine.physics2d.Physics2D;
+import org.misterej.engine.physics2d.RaycastInfo;
+import org.misterej.engine.physics2d.components.FloorCollider;
+import org.misterej.engine.physics2d.components.RigidBody2D;
+import org.misterej.engine.util.AssetPool;
+import org.misterej.engine.util.JMath;
+import org.misterej.engine.util.Timer;
 
 
 public class PlayerController extends Script {
@@ -35,47 +33,50 @@ public class PlayerController extends Script {
     private Camera camera;
     private SpriteRenderer spr;
     private RigidBody2D rb;
-    private double speed = 5;
-    private double jumpImpulse = 0.8;
+    private AnimationPlayer animationPlayer;
+    private float speed = 4f;
+    private float jumpImpulse = 6.5f;
     private State state = State.IDLE;
     private Vector2f startingPosition;
+    private boolean canJump = true;
 
     @Override
     public void update(float deltaTime) {
 
-
-        if(state == State.ALIVE)
-        {
-            onGround();
-            rb.getRawBody().setLinearVelocity(speed, rb.getRawBody().getLinearVelocity().y);
-
-            if(Input.KeyboardListener.iskeyPressed(GLFW.GLFW_KEY_SPACE) && onGround())
-            {
-                rb.getRawBody().applyImpulse(new Vector2(0, jumpImpulse));
-            }
-
-            if(checkIsDead())
-            {
-                state = State.DEAD;
-            }
-        }
-
         if(state == State.IDLE)
         {
+            animationPlayer.setAnimation("IDLE");
             if(Input.KeyboardListener.iskeyPressed(GLFW.GLFW_KEY_SPACE))
             {
                 state = State.ALIVE;
+                canJump = false;
+            }
+        }
+
+        if(state == State.ALIVE)
+        {
+            animationPlayer.setAnimation("RUN");
+            rb.getRawBody().setLinearVelocity(new Vec2(speed, rb.getRawBody().getLinearVelocity().y));
+
+            if(Input.KeyboardListener.isKeyDown(GLFW.GLFW_KEY_SPACE) && canJump)
+            {
+                rb.getRawBody().setLinearVelocity(new Vec2(speed, jumpImpulse));
+                canJump = false;
             }
         }
 
         if(state == State.DEAD)
         {
-            state = State.IDLE;
-            Transform tr = new Transform();
-            tr.translate(new Vector2(startingPosition.x, startingPosition.y));
-            rb.getRawBody().setTransform(tr);
-            rb.getRawBody().setLinearVelocity(new Vector2(0,0));
-            System.out.println("dead");
+            animationPlayer.setAnimation("DIE");
+            if(!animationPlayer.isPlaying())
+            {
+                if(Input.KeyboardListener.iskeyPressed(GLFW.GLFW_KEY_SPACE))
+                {
+                    rb.getRawBody().setLinearVelocity(new Vec2(0,0));
+                    rb.getRawBody().setTransform(new Vec2(startingPosition.x, startingPosition.y), 0);
+                    state = State.IDLE;
+                }
+            }
         }
 
 
@@ -83,64 +84,52 @@ public class PlayerController extends Script {
         camera.position.y = gameObject.getTransform().position.y - (camera.getViewPort().y / 2f) + (gameObject.getTransform().size.y / 2f);
     }
 
-    public boolean onGround()
+    public boolean checkIsDead()
     {
-        List<RaycastResult<Body, BodyFixture>> rez = SceneManager.getCurrentScene().getPhysics().raycast(
-                new Vector2(gameObject.transform.position.x, gameObject.transform.position.y),
-                Rotation.rotation270().toRadians(),
-                0.25);
-
-        List<RaycastResult<Body, BodyFixture>> rez2 = SceneManager.getCurrentScene().getPhysics().raycast(
-                new Vector2(gameObject.transform.position.x + gameObject.transform.size.x, gameObject.transform.position.y),
-                Rotation.rotation270().toRadians(),
-                0.25);
-        if(rez != null)
-        {
-            for (RaycastResult<Body, BodyFixture> r : rez)
-            {
-                if(r.getBody().getUserData() != gameObject)
-                {
-                    return true;
-                }
-            }
-        }
-
-        if(rez2 != null)
-        {
-            for (RaycastResult<Body, BodyFixture> r : rez2)
-            {
-                if(r.getBody().getUserData() != gameObject)
-                {
-                    return true;
-                }
-            }
-        }
         return false;
     }
 
-    public boolean checkIsDead()
+    public void setUpAnimations()
     {
-        List<RaycastResult<Body, BodyFixture>> rez = SceneManager.getCurrentScene().getPhysics().raycast(
-                new Vector2(gameObject.transform.position.x, gameObject.transform.position.y),
-                Rotation.rotation0().toRadians(),
-                0.25);
-        if(rez != null)
+        SpriteSheet spriteSheet = AssetPool.getSpriteSheet("assets/textures/MiniCavalierMan.png");
+        Animation animationRun = new Animation("RUN", spriteSheet, true);
+        animationRun.addFrames(new int[]{6,7,8,9,10,11});
+        animationRun.setSpeed(12);
+
+        Animation animationIdle = new Animation("IDLE", spriteSheet, true);
+        animationIdle.addFrames(new int[]{0,1,2,3});
+        animationIdle.setSpeed(12);
+
+        Animation animationDie = new Animation("DIE", spriteSheet, false);
+        animationDie.addFrames(new int[]{30,31,32,33,34,35});
+        animationDie.setSpeed(12);
+
+        animationPlayer.addAnimation(animationIdle);
+        animationPlayer.addAnimation(animationRun);
+        animationPlayer.addAnimation(animationDie);
+    }
+
+    @Override
+    public void beginCollision(GameObject obj, Contact contact, Vector2f normal)
+    {
+        if(JMath.compare(normal, new Vector2f(0,-1)) && obj.getComponent(FloorCollider.class) != null)
         {
-            for (RaycastResult<Body, BodyFixture> r : rez)
-            {
-                if(r.getBody().getUserData() != gameObject)
-                {
-                    return true;
-                }
-            }
+            canJump = true;
         }
-        return false;
+        if(JMath.compare(normal, new Vector2f(1, 0)) && obj.getComponent(FloorCollider.class) != null)
+        {
+            state = State.DEAD;
+        }
     }
 
     @Override
     public void start() {
         camera = SceneManager.getCurrentScene().getCamera();
-        this.rb = gameObject.getComponent(RigidBody2D.class);
+        rb = gameObject.getComponent(RigidBody2D.class);
+        rb.getRawBody().setGravityScale(3f);
         spr = gameObject.getComponent(SpriteRenderer.class);
+
+        animationPlayer = gameObject.getComponent(AnimationPlayer.class);
+        setUpAnimations();
     }
 }

@@ -1,8 +1,10 @@
 package org.misterej.engine.physics2d.components;
 
 import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.contacts.Contact;
 import org.joml.Vector2f;
 import org.misterej.engine.Component;
+import org.misterej.engine.GameObject;
 import org.misterej.engine.physics2d.enums.BodyType;
 
 public class RigidBody2D extends Component {

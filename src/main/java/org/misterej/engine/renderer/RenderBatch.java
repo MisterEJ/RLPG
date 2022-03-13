@@ -1,9 +1,11 @@
 package org.misterej.engine.renderer;
 
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.misterej.engine.GameObject;
+import org.misterej.engine.Renderer;
 import org.misterej.engine.SceneManager;
 import org.misterej.engine.components.SpriteRenderer;
 import org.misterej.engine.util.AssetPool;
@@ -18,7 +20,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
-public class RenderBatch {
+public class RenderBatch implements Comparable<RenderBatch> {
     // VERTEX
     // ======
     //  Position            Color                           UV                      texID
@@ -49,12 +51,17 @@ public class RenderBatch {
 
     private int vaoID, vboID;
     private int maxBatchSize;
-    private boolean rebuffer = true;
+
+    private int zIndex;
+
+    private Renderer renderer;
 
     private Shader shader;
 
-    public RenderBatch(int maxBatchSize)
+    public RenderBatch(int maxBatchSize, int zIndex, Renderer renderer)
     {
+        this.zIndex = zIndex;
+        this.renderer = renderer;
         shader = AssetPool.getShader("assets/shaders/default.glsl");
 
         this.sprites = new SpriteRenderer[maxBatchSize];
@@ -139,10 +146,17 @@ public class RenderBatch {
 
     public void updateSprite()
     {
+        boolean rebuffer = false;
         for(int i = 0; i < numSprites; i++)
         {
             if(sprites[i].isDirty())
             {
+                if(!hasTexture(sprites[i].getTexture()))
+                {
+                    renderer.destroyGameObject(sprites[i].gameObject);
+                    renderer.add(sprites[i].gameObject);
+                    continue;
+                }
                 loadVertexProperties(i);
                 sprites[i].resetDirtyFlag();
                 rebuffer = true;
@@ -152,7 +166,7 @@ public class RenderBatch {
         {
             glBindBuffer(GL_ARRAY_BUFFER, vboID);
             glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
-            rebuffer = false;
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
     }
 
@@ -316,4 +330,14 @@ public class RenderBatch {
         return this.textures.contains(texture);
     }
 
+    public int getZIndex()
+    {
+        return zIndex;
+    }
+
+    @Override
+    public int compareTo(@NotNull RenderBatch o)
+    {
+        return Integer.compare(getZIndex(), o.getZIndex());
+    }
 }

@@ -1,12 +1,13 @@
 package org.misterej.engine;
 
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.misterej.engine.components.SpriteRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameObject{
+public class GameObject implements Comparable<GameObject>{
 
     private String name;
     private List<Component> components;
@@ -188,5 +189,10 @@ public class GameObject{
             transform.rotation += 360f;
 
         setDirtyFlag();
+    }
+
+    @Override
+    public int compareTo(@NotNull GameObject o) {
+        return Float.compare(this.transform.position.x, o.transform.position.x);
     }
 }

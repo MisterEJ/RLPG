@@ -1,16 +1,17 @@
 package org.misterej.engine;
 
-import org.joml.Vector2f;
+
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
 import org.misterej.engine.imgui.ImGuiLayer;
-import org.misterej.engine.physics2d.components.RigidBody2D;
+
 import org.misterej.engine.renderer.DebugDraw;
 import org.misterej.engine.util.Logger;
 import org.misterej.engine.util.Time;
+
 
 import java.nio.IntBuffer;
 
@@ -150,6 +151,8 @@ public class Window {
 
     private void close()
     {
+        imguilayer.dispose();
+
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
 

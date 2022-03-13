@@ -6,6 +6,7 @@ import org.misterej.engine.renderer.RenderBatch;
 import org.misterej.engine.renderer.Texture;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -13,9 +14,9 @@ import static org.lwjgl.opengl.GL11.*;
 // TODO: Renderer class
 public class Renderer {
 
-    private final int MAX_BATCH_SIZE = 1000;
+    private final int MAX_BATCH_SIZE = 10;
 
-    private Color clearColor = new Color(0.5f, 0.5f, 0.5f, 1);
+    private Color clearColor = new Color(31f/255f, 14f/255f, 28f/255f, 1);
     private List<RenderBatch> batches;
 
     public Renderer()
@@ -43,7 +44,7 @@ public class Renderer {
         boolean added = false;
         for(RenderBatch batch : batches)
         {
-            if(batch.hasRoom()) {
+            if(batch.hasRoom() && batch.getZIndex() == spr.zIndex) {
                 Texture texture = spr.getTexture();
 
                 if (texture == null || (batch.hasTexture(texture) || batch.hasTextureRoom()))
@@ -57,10 +58,11 @@ public class Renderer {
 
         if(!added)
         {
-            RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE);
+            RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE, spr.zIndex, this);
             newBatch.start();
             batches.add(newBatch);
             newBatch.addSprite(spr);
+            Collections.sort(batches);
         }
     }
 

@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.stb.STBImage.*;
+import static org.lwjgl.stb.STBImageWrite.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -23,7 +24,7 @@ public class Texture {
 
         // Generate Texture
         texID = glGenTextures();
-        glBindTexture(GL_TEXTURE_2D, texID);
+        bind();
 
         // Repeat image in both directions
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -41,16 +42,17 @@ public class Texture {
 
         this.width = width.get(0);
         this.height = height.get(0);
-        Logger.log(filePath + " Channels: " + channels.get(0));
+        Logger.log(filePath + " Channels: " + channels.get(0) + " Width: " + this.width + " Height: " + this.height);
 
         if (image != null)
         {
             if(channels.get(0) == 4)
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width.get(0), height.get(0), 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
             else if (channels.get(0) == 3)
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width.get(0), height.get(0), 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width.get(0), height.get(0), 0, GL_RGB, GL_UNSIGNED_BYTE, image);
             else
                 assert false : "ERROR: (Texture) unknown format: " + filePath;
+
             Logger.logGL(glGetError());
         }
         else
@@ -59,6 +61,7 @@ public class Texture {
         }
 
         stbi_image_free(image);
+        unbind();
 
     }
 
