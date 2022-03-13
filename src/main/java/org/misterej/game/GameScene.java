@@ -104,10 +104,6 @@ public class GameScene extends Scene {
     {
         AssetPool.getShader("assets/shaders/default.glsl");
 
-        AssetPool.addSpriteSheet("assets/textures/sprites.png", new SpriteSheet(
-                AssetPool.getTexture("assets/textures/sprites.png"), 16, 16, 3, 0
-        ));
-
         AssetPool.addSpriteSheet("assets/textures/MiniCavalierMan.png", new SpriteSheet(
                 AssetPool.getTexture("assets/textures/MiniCavalierMan.png"), 26, 26, 36, 0
         ));

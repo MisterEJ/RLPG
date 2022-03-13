@@ -243,10 +243,6 @@ public class LevelEditor extends Scene{
     {
         AssetPool.getShader("assets/shaders/default.glsl");
 
-        AssetPool.addSpriteSheet("assets/textures/sprites.png", new SpriteSheet(
-                AssetPool.getTexture("assets/textures/sprites.png"), 16, 16, 3, 0
-        ));
-
         AssetPool.addSpriteSheet("assets/textures/DeepForestTileset.png", new SpriteSheet(
                 AssetPool.getTexture("assets/textures/DeepForestTileset.png"), 16, 16, 80, 0
         ));
