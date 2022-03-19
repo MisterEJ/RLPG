@@ -34,6 +34,14 @@ public class LevelEditor extends Scene{
 
     @Override
     public void update(float deltaTime) {
+
+        //DebugLines
+        for(int i = -50; i < 1000; i++)
+        {
+            DebugDraw.addLine2D(new Vector2f(-100000,i * tilemap.getCellHeight()), new Vector2f(100000, i * tilemap.getCellHeight()));
+            DebugDraw.addLine2D(new Vector2f(i * tilemap.getCellWidth(),100000), new Vector2f(i * tilemap.getCellWidth(), -100000));
+        }
+
         for(GameObject go : gameObjects)
         {
             go.update(deltaTime);
@@ -69,6 +77,8 @@ public class LevelEditor extends Scene{
 
         loadResources();
 
+        camera.setViewPort(camera.getViewPort().mul(2));
+
         SpriteSheet spriteSheet = AssetPool.getSpriteSheet("assets/textures/DeepForestTileset.png");
         tilemap = new Tilemap(1f,1f, spriteSheet);
 
@@ -78,17 +88,10 @@ public class LevelEditor extends Scene{
             this.addTilemap(tilemap);
         }
 
-        //DebugLines
-        for(int i = -200; i < 200; i++)
-        {
-            DebugDraw.addLine2D(new Vector2f(-100000,i * tilemap.getCellHeight()), new Vector2f(100000, i * tilemap.getCellHeight()));
-            DebugDraw.addLine2D(new Vector2f(i * tilemap.getCellWidth(),100000), new Vector2f(i * tilemap.getCellWidth(), -100000));
-        }
-
-        GameObject tile = new GameObject("Tile", new Transform(new Vector2f(0,0), new Vector2f(1,1)));
-        tile.addComponent(new ScriptComponent(new TilePosScript(tile, 1, 1)));
+        GameObject tile = new GameObject("Tile", new Transform(new Vector2f(0,0), new Vector2f(tilemap.getCellWidth(),tilemap.getCellHeight())));
+        tile.addComponent(new ScriptComponent(new TilePosScript(tile, 1f, 1f)));
         tile.addComponent(new SpriteRenderer(new Sprite(AssetPool.getTexture("assets/textures/selection.png"))));
-        tile.getComponent(SpriteRenderer.class).zIndex = 1;
+        tile.getComponent(SpriteRenderer.class).setZIndex(1);
         selectionObject = tile;
         this.addGameObject(tile);
     }
@@ -102,7 +105,7 @@ public class LevelEditor extends Scene{
         ImGui.begin("Info");
         for(GameObject gameObject : gameObjects)
         {
-            ImGui.text(gameObject.getId() + ": x" + gameObject.getTransform().position.x + " y" + gameObject.getTransform().position.x);
+            ImGui.text(gameObject.getId() + ": x" + gameObject.getTransform().position.x + " y" + gameObject.getTransform().position.y);
         }
         ImGui.end();
 
@@ -110,7 +113,7 @@ public class LevelEditor extends Scene{
         ImGui.inputText("Filename", filename);
         if(ImGui.button("Save Tilemap"))
         {
-            if(!filename.get().equals(""))
+            if(!filename.get().isEmpty())
             {
                 tilemap.save(filename.get());
             }
@@ -159,7 +162,6 @@ public class LevelEditor extends Scene{
                 }
 
                 SceneManager.setScene(new GameScene(filepath));
-                DebugDraw.removeAllLines();
             }
         }
 
@@ -182,7 +184,7 @@ public class LevelEditor extends Scene{
             }
             ImGui.popID();
 
-            if(ImGui.getItemRectMaxX() + (sprite.getWidth()) < ImGui.getContentRegionMaxX())
+            if(ImGui.getItemRectMinX() - (sprite.getWidth() * scale) < ImGui.getContentRegionAvailX())
                 ImGui.sameLine();
         }
 
@@ -245,6 +247,10 @@ public class LevelEditor extends Scene{
 
         AssetPool.addSpriteSheet("assets/textures/DeepForestTileset.png", new SpriteSheet(
                 AssetPool.getTexture("assets/textures/DeepForestTileset.png"), 16, 16, 80, 0
+        ));
+
+        AssetPool.addSpriteSheet("assets/textures/MiniCavalierMan.png", new SpriteSheet(
+                AssetPool.getTexture("assets/textures/MiniCavalierMan.png"), 26, 26, 36, 0
         ));
     }
 }

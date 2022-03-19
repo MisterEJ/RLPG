@@ -16,9 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL33.*;
 
 public class RenderBatch implements Comparable<RenderBatch> {
     // VERTEX
@@ -52,6 +50,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
     private int vaoID, vboID;
     private int maxBatchSize;
 
+    boolean rebuffer = true;
     private int zIndex;
 
     private Renderer renderer;
@@ -107,6 +106,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
     public void render()
     {
         updateSprite();
+
         shader.use();
         shader.uploadMat4f("uProjection", SceneManager.getCurrentScene().getCamera().getProjectionMatrix());
         shader.uploadMat4f("uView", SceneManager.getCurrentScene().getCamera().getViewMatrix());
@@ -146,7 +146,6 @@ public class RenderBatch implements Comparable<RenderBatch> {
 
     public void updateSprite()
     {
-        boolean rebuffer = false;
         for(int i = 0; i < numSprites; i++)
         {
             if(sprites[i].isDirty())
@@ -155,11 +154,18 @@ public class RenderBatch implements Comparable<RenderBatch> {
                 {
                     renderer.destroyGameObject(sprites[i].gameObject);
                     renderer.add(sprites[i].gameObject);
-                    continue;
+                } else
+                {
+                    loadVertexProperties(i);
+                    sprites[i].resetDirtyFlag();
+                    rebuffer = true;
                 }
-                loadVertexProperties(i);
-                sprites[i].resetDirtyFlag();
-                rebuffer = true;
+
+                if (sprites[i].getZIndex() != this.zIndex) {
+                    destroyIfExists(sprites[i].gameObject);
+                    renderer.add(sprites[i].gameObject);
+                    i--;
+                }
             }
         }
         if(rebuffer)
@@ -167,6 +173,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
             glBindBuffer(GL_ARRAY_BUFFER, vboID);
             glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
             glBindBuffer(GL_ARRAY_BUFFER, 0);
+            rebuffer = false;
         }
     }
 

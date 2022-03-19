@@ -9,14 +9,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL33.*;
 
 // TODO: Renderer class
 public class Renderer {
 
-    private final int MAX_BATCH_SIZE = 10;
+    private final int MAX_BATCH_SIZE = 1000;
 
-    private Color clearColor = new Color(31f/255f, 14f/255f, 28f/255f, 1);
+    private Color clearColor = new Color(0.5f, 0.5f, 0.5f, 1);
     private List<RenderBatch> batches;
 
     public Renderer()
@@ -44,10 +44,10 @@ public class Renderer {
         boolean added = false;
         for(RenderBatch batch : batches)
         {
-            if(batch.hasRoom() && batch.getZIndex() == spr.zIndex) {
+            if(batch.hasRoom() && batch.getZIndex() == spr.getZIndex()) {
                 Texture texture = spr.getTexture();
 
-                if (texture == null || (batch.hasTexture(texture) || batch.hasTextureRoom()))
+                if (texture == null || batch.hasTexture(texture) || batch.hasTextureRoom())
                 {
                     batch.addSprite(spr);
                     added = true;
@@ -58,7 +58,7 @@ public class Renderer {
 
         if(!added)
         {
-            RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE, spr.zIndex, this);
+            RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE, spr.getZIndex(), SceneManager.getCurrentScene().getRenderer());
             newBatch.start();
             batches.add(newBatch);
             newBatch.addSprite(spr);

@@ -1,3 +1,5 @@
+//Eitvidas Stulgis 5g
+
 package org.misterej.game;
 
 import org.misterej.engine.LevelEditor;

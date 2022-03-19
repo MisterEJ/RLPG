@@ -4,7 +4,6 @@ package org.misterej.engine;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
 import org.misterej.engine.imgui.ImGuiLayer;
 
@@ -19,7 +18,7 @@ import static java.sql.Types.NULL;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL33.*;
 
 public class Window {
 
@@ -87,7 +86,7 @@ public class Window {
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
 
-        Logger.log("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
+        Logger.log("OpenGL version: " + glGetString(GL_VERSION));
 
         // Enable Vsync
         glfwSwapInterval(1);
@@ -111,15 +110,15 @@ public class Window {
             SceneManager.setScene(new LevelEditor());
         }
 
-        DebugDraw.begin_frame();
-
         while(!glfwWindowShouldClose(window))
         {
             beginTime = Time.getTime();
+            DebugDraw.beginFrame();
             SceneManager.getCurrentScene().renderer.prepare();
 
-            DebugDraw.draw();
+
             SceneManager.getCurrentScene().update(deltaTime);
+            DebugDraw.draw();
             imguilayer.update(deltaTime);
 
             if(Input.KeyboardListener.iskeyPressed(GLFW_KEY_F11))

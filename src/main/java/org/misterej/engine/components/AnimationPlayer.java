@@ -42,7 +42,7 @@ public class AnimationPlayer extends Component {
         animation.stop();
     }
 
-    public void setAnimation(String animationName)
+    public void setAnimation(String animationName, boolean play)
     {
         if(animations.containsKey(animationName))
         {
@@ -50,9 +50,15 @@ public class AnimationPlayer extends Component {
             {
                 if(!(animation == null)) animation.stop();
                 animation = animations.get(animationName);
-                animation.play();
+                if (play) animation.play();
+                System.out.println(animationName);
             }
         }
+    }
+
+    public void setFrame(int frame)
+    {
+        animation.setFrame(frame);
     }
 
     public void addAnimation(Animation animation)

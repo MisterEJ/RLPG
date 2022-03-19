@@ -73,6 +73,13 @@ public class Animation {
         }
     }
 
+    public void setFrame(int frame)
+    {
+        if(frame < frames.size() && frame >= 0)
+            this.frame = frame;
+        else this.frame = 0;
+    }
+
     public void play()
     {
         frame = 0;

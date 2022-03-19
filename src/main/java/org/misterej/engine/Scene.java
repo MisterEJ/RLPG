@@ -1,7 +1,6 @@
 package org.misterej.engine;
 
 import org.joml.Vector2f;
-import org.misterej.engine.dyn4j.PhysicsD;
 import org.misterej.engine.physics2d.Physics2D;
 import org.misterej.engine.physics2d.components.RigidBody2D;
 import org.misterej.game.GameScene;
@@ -11,9 +10,8 @@ import java.util.List;
 
 public abstract class Scene {
 
-
     protected Renderer renderer = new Renderer();
-    protected Camera camera = new Camera(new Vector2f());
+    protected Camera camera = new Camera(new Vector2f(0,0));
 
     protected List<GameObject> gameObjects = new ArrayList<>();
     protected Physics2D physics2D = new Physics2D();

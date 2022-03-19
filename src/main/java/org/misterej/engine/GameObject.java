@@ -58,6 +58,27 @@ public class GameObject implements Comparable<GameObject>{
         return null;
     }
 
+    public <T extends Component> List<T> getComponents(Class<T> componentClass)
+    {
+        List<T> comL = new ArrayList<>();
+        for(Component c : components)
+        {
+            if(componentClass.isAssignableFrom(c.getClass()))
+            {
+                try
+                {
+                    comL.add(componentClass.cast(c));
+                }
+                catch(ClassCastException e)
+                {
+                    assert false: "ERROR: Error while casting component";
+                }
+            }
+        }
+
+        return comL;
+    }
+
 
     /**
      * Remove a specific component from the object.

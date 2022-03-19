@@ -62,20 +62,26 @@ public class Physics2D {
             body.m_mass = rb.getMass();
             rb.setRawBody(body);
 
-            CircleCollider circleCollider;
-            Box2DCollider box2DCollider;
-            FloorCollider floorCollider;
+            List<CircleCollider> circleColliders;
+            List<Box2DCollider> box2DColliders;
+            List<FloorCollider> floorColliders;
 
-            if((circleCollider = go.getComponent(CircleCollider.class)) != null)
+            if((circleColliders = go.getComponents(CircleCollider.class)).size() > 0)
             {
-                addCircleCollider(rb, circleCollider);
+                for(CircleCollider c : circleColliders)
+                    addCircleCollider(rb, c);
             }
-            else if( (box2DCollider = go.getComponent(Box2DCollider.class)) != null)
+
+            if( (box2DColliders = go.getComponents(Box2DCollider.class)).size() > 0)
             {
-                addBox2DCollider(rb, box2DCollider);
-            } else if((floorCollider = go.getComponent(FloorCollider.class)) != null)
+                for(Box2DCollider c : box2DColliders)
+                    addBox2DCollider(rb, c);
+            }
+
+            if((floorColliders = go.getComponents(FloorCollider.class)).size() > 0)
             {
-                addFloorCollider(rb, floorCollider);
+                for(FloorCollider c : floorColliders)
+                    addFloorCollider(rb, c);
             }
         }
     }
@@ -90,16 +96,17 @@ public class Physics2D {
         Vec2 offset = new Vec2(-size/2, -size/2);
 
         Vec2[] vr = new Vec2[4];
-        vr[0] = new Vec2(0, 0).add(offset);
-        vr[1] = new Vec2(size, 0).add(offset);
-        vr[2] = new Vec2(size, size).add(offset);
-        vr[3] = new Vec2(0, size).add(offset);
+        vr[0] = new Vec2(0, 0);
+        vr[1] = new Vec2(size, 0);
+        vr[2] = new Vec2(size, size);
+        vr[3] = new Vec2(0, size);
 
         shape.createLoop(vr, vr.length);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1;
         fixtureDef.userData = floorCollider.gameObject;
+        fixtureDef.isSensor = floorCollider.isSensor();
         body.createFixture(fixtureDef);
 
     }
@@ -119,6 +126,7 @@ public class Physics2D {
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
         fixtureDef.userData = boxCollider.gameObject;
+        fixtureDef.isSensor = boxCollider.isSensor();
         body.createFixture(fixtureDef);
     }
 
@@ -134,6 +142,7 @@ public class Physics2D {
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
         fixtureDef.userData = circleCollider.gameObject;
+        fixtureDef.isSensor = circleCollider.isSensor();
         body.createFixture(fixtureDef);
     }
 
@@ -170,20 +179,6 @@ public class Physics2D {
         world.raycast(callback, new Vec2(point1.x, point1.y),
                 new Vec2(point2.x, point2.y));
         return callback;
-    }
-
-    public static boolean checkOnGround(GameObject gameObject, float innerPlayerWidth, float height) {
-        Vector2f raycastBegin = new Vector2f(gameObject.transform.position);
-        Vector2f raycastEnd = new Vector2f(raycastBegin).sub(0, 0.26f);
-
-        RaycastInfo info = SceneManager.getCurrentScene().getPhysics().raycast(gameObject, raycastBegin, raycastEnd);
-
-        Vector2f raycast2Begin = new Vector2f(raycastBegin).add(innerPlayerWidth, 0.0f);
-        Vector2f raycast2End = new Vector2f(raycastEnd).add(innerPlayerWidth, 0.0f);
-        RaycastInfo info2 = SceneManager.getCurrentScene().getPhysics().raycast(gameObject, raycast2Begin, raycast2End);
-
-        return (info.hit && info.hitObject != null && info.hitObject.getComponent(SpriteRenderer.class).getSprite().getId() == 2) ||
-                (info2.hit && info2.hitObject != null && info2.hitObject.getComponent(SpriteRenderer.class).getSprite().getId() == 2);
     }
 
 }

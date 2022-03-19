@@ -12,9 +12,9 @@ public class SpriteRenderer extends Component {
 
     private Color color;
     private Sprite sprite;
-    public int zIndex = 0;
+    private int zIndex = 0;
 
-    private boolean dirty = false;
+    private boolean dirty = true;
 
     public SpriteRenderer(Color color)
     {
@@ -82,5 +82,15 @@ public class SpriteRenderer extends Component {
     public Sprite getSprite()
     {
         return sprite;
+    }
+
+    public int getZIndex()
+    {
+        return zIndex;
+    }
+
+    public void setZIndex(int index)
+    {
+        this.zIndex = index;
     }
 }

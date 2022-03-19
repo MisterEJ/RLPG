@@ -17,10 +17,10 @@ public class TilePosScript extends Script {
 
     @Override
     public void update(float deltaTime) {
-        float x = (int)Input.MouseListener.getXWorld();
-        float y = (int)Input.MouseListener.getYWorld();
-        x = x > 0 ? (x / snap_x) * snap_x : ((x / snap_x) * snap_x) - snap_x;
-        y = y > 0 ? (y / snap_y) * snap_y : ((y / snap_y) * snap_y) - snap_y;
+
+        float x = Input.MouseListener.getXWorld() > 0 ? (int)Input.MouseListener.getXWorld() : (int)Input.MouseListener.getXWorld() - snap_x;
+        float y = Input.MouseListener.getYWorld() > 0 ? (int)Input.MouseListener.getYWorld() : (int)Input.MouseListener.getYWorld() - snap_y;
+
         gameObject.setPos(new Vector2f(x,y));
     }
 

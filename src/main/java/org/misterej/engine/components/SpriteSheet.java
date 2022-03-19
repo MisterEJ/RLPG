@@ -23,11 +23,12 @@ public class SpriteSheet {
 
         for(int i = 0; i < numSprites; i++)
         {
-            // NORMALIZED DEVICE COORDINATES
-            float topY = (currentY + spriteHeight) / (float)texture.getHeight();
-            float rightX = (currentX + spriteWidth) / (float)texture.getWidth();
-            float leftX = currentX / (float)texture.getWidth();
-            float bottomY = currentY / (float)texture.getHeight();
+            // NORMALIZED DEVICE COORDINATES + half_pixel correction
+            float topY = (currentY + spriteHeight - 0.5f) / (float)texture.getHeight();
+            float rightX = (currentX + spriteWidth - 0.5f) / (float)texture.getWidth();
+            float leftX = (currentX + 0.5f) / (float)texture.getWidth();
+            float bottomY = (currentY + 0.5f) / (float)texture.getHeight();
+
 
             Vector2f[] texCoords = {
                     new Vector2f(rightX, topY),
@@ -35,6 +36,11 @@ public class SpriteSheet {
                     new Vector2f(leftX, bottomY),
                     new Vector2f(leftX, topY)
             };
+
+            for(Vector2f v : texCoords)
+            {
+                System.out.println(v.x + " " + v.y);
+            }
 
             Sprite sprite = new Sprite(this.texture, texCoords);
             sprite.setHeight(spriteHeight);

@@ -12,6 +12,7 @@ import org.misterej.engine.physics2d.components.CircleCollider;
 import org.misterej.engine.physics2d.components.FloorCollider;
 import org.misterej.engine.physics2d.components.RigidBody2D;
 import org.misterej.engine.physics2d.enums.BodyType;
+import org.misterej.engine.renderer.Color;
 import org.misterej.engine.util.AssetPool;
 
 import java.util.ArrayList;
@@ -51,6 +52,8 @@ public class GameScene extends Scene {
     public void init() {
         loadResources();
 
+        renderer.setClearColor(new Color(31f/255f,14f/255f,28f/255f, 1));
+
         SpriteSheet spriteSheet = AssetPool.getSpriteSheet("assets/textures/DeepForestTileset.png");
 
         tilemap = new Tilemap(0.5f,0.5f, spriteSheet);
@@ -65,13 +68,29 @@ public class GameScene extends Scene {
                 go.getComponent(RigidBody2D.class).setBodyType(BodyType.Dynamic);
                 go.getComponent(RigidBody2D.class).setFixedRotation(true);
                 go.addComponent(new Box2DCollider());
-                go.getComponent(RigidBody2D.class);
                 go.getComponent(Box2DCollider.class).setHalfSize(new Vector2f(go.transform.size).div(2));
+                go.getComponent(Box2DCollider.class).setOffset(new Vector2f(go.transform.size).div(2));
+                Box2DCollider box2DCollider = new Box2DCollider();
+                box2DCollider.setHalfSize(new Vector2f(go.transform.size.x / 2, 0.1f));
+                box2DCollider.setOffset(box2DCollider.getHalfSize());
+                box2DCollider.setSensor(true);
+                box2DCollider.color.x = 1;
+                go.addComponent(box2DCollider);
 
                 player = go;
                 player.setName("Player");
                 player.transform.size.mul(2f);
-                player.getComponent(SpriteRenderer.class).zIndex = 1;
+                player.getComponent(SpriteRenderer.class).setZIndex(1);
+            }
+
+            if(go.getComponent(SpriteRenderer.class).getSprite().getId() == 72)
+            {
+                go.addComponent(new RigidBody2D());
+                go.getComponent(RigidBody2D.class).setBodyType(BodyType.Static);
+                go.addComponent(new Box2DCollider());
+                go.getComponent(Box2DCollider.class).setHalfSize(new Vector2f(go.transform.size.x * 0.8f, go.transform.size.y/4).div(2));
+                go.getComponent(Box2DCollider.class).setOffset(new Vector2f(go.transform.size.x * 0.8f, go.transform.size.y/4).div(2).add(-0.1f,0));
+                go.getComponent(Box2DCollider.class).setSensor(true);
             }
 
             List<Integer> floor = new ArrayList();
@@ -109,7 +128,7 @@ public class GameScene extends Scene {
         ));
 
         AssetPool.addSpriteSheet("assets/textures/DeepForestTileset.png", new SpriteSheet(
-                AssetPool.getTexture("assets/textures/DeepForestTileset.png"), 16, 16, 3, 0
+                AssetPool.getTexture("assets/textures/DeepForestTileset.png"), 16, 16, 80, 0
         ));
     }
 
