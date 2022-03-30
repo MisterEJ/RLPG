@@ -1,4 +1,5 @@
 # RLPG
-Rouge Like Puzzle Game
 
-Developing a 2D game engine with LWJGL.
+Java 17
+
+Mini LWJGL game engine
