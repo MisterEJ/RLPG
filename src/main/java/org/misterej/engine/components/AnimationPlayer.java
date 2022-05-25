@@ -1,7 +1,6 @@
 package org.misterej.engine.components;
 
 import org.misterej.engine.Component;
-import org.misterej.engine.util.Timer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,7 +50,6 @@ public class AnimationPlayer extends Component {
                 if(!(animation == null)) animation.stop();
                 animation = animations.get(animationName);
                 if (play) animation.play();
-                System.out.println(animationName);
             }
         }
     }
@@ -59,6 +57,11 @@ public class AnimationPlayer extends Component {
     public void setFrame(int frame)
     {
         animation.setFrame(frame);
+    }
+
+    public String getAnimationName()
+    {
+        return animation.getName();
     }
 
     public void addAnimation(Animation animation)

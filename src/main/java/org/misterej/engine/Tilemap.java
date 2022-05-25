@@ -53,12 +53,11 @@ public class Tilemap {
                 }
             } else
             {
-                assert false : "(Tilemap) csv file bad format";
+                return;
             }
         } catch(Exception e)
         {
             e.printStackTrace();
-            assert false : "(Tilemap) Cannot load resource '" + resourceName + "'";
         }
     }
 

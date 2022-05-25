@@ -1,14 +1,10 @@
 package org.misterej.game;
 
-import org.dyn4j.geometry.MassType;
-import org.dyn4j.geometry.Vector2;
-import org.jbox2d.common.Vec2;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import org.misterej.engine.*;
 import org.misterej.engine.components.*;
 import org.misterej.engine.physics2d.components.Box2DCollider;
-import org.misterej.engine.physics2d.components.CircleCollider;
 import org.misterej.engine.physics2d.components.FloorCollider;
 import org.misterej.engine.physics2d.components.RigidBody2D;
 import org.misterej.engine.physics2d.enums.BodyType;
@@ -24,28 +20,19 @@ public class GameScene extends Scene {
     private Tilemap tilemap;
     private GameObject player;
 
-    private final String level;
-
     public GameScene(String level)
     {
-        this.level = level;
+        super(level);
     }
 
     @Override
     public void update(float deltaTime) {
-
-        for(GameObject go : this.gameObjects)
-        {
-            go.update(deltaTime);
-        }
+        super.update(deltaTime);
 
         if(Input.KeyboardListener.iskeyPressed(GLFW.GLFW_KEY_F1))
         {
             SceneManager.setScene(new LevelEditor(level));
         }
-
-        this.physics2D.update(deltaTime);
-        this.renderer.render();
     }
 
     @Override
@@ -61,7 +48,7 @@ public class GameScene extends Scene {
 
         for(GameObject go : tilemap.getTiles())
         {
-            if(go.getComponent(SpriteRenderer.class).getSprite().getId() == 15)
+            if(go.getComponent(SpriteRenderer.class).getSprite().getId() == 80)
             {
 //                // Player
                 go.addComponent(new RigidBody2D());
@@ -90,6 +77,16 @@ public class GameScene extends Scene {
                 go.addComponent(new Box2DCollider());
                 go.getComponent(Box2DCollider.class).setHalfSize(new Vector2f(go.transform.size.x * 0.8f, go.transform.size.y/4).div(2));
                 go.getComponent(Box2DCollider.class).setOffset(new Vector2f(go.transform.size.x * 0.8f, go.transform.size.y/4).div(2).add(-0.1f,0));
+                go.getComponent(Box2DCollider.class).setSensor(true);
+            }
+
+            if(go.getComponent(SpriteRenderer.class).getSprite().getId() == 81)
+            {
+                go.addComponent(new RigidBody2D());
+                go.getComponent(RigidBody2D.class).setBodyType(BodyType.Static);
+                go.addComponent(new Box2DCollider());
+                go.getComponent(Box2DCollider.class).setHalfSize(new Vector2f(go.transform.size.x, go.transform.size.y));
+                go.getComponent(Box2DCollider.class).setOffset(new Vector2f(go.transform.size.x, go.transform.size.y).div(2));
                 go.getComponent(Box2DCollider.class).setSensor(true);
             }
 

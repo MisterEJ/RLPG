@@ -2,13 +2,11 @@ package org.misterej.engine.renderer;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.misterej.engine.Camera;
 import org.misterej.engine.SceneManager;
 import org.misterej.engine.util.AssetPool;
 import org.misterej.engine.util.JMath;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL33.*;

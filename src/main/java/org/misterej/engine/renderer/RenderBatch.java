@@ -1,6 +1,5 @@
 package org.misterej.engine.renderer;
 
-import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
@@ -9,7 +8,6 @@ import org.misterej.engine.Renderer;
 import org.misterej.engine.SceneManager;
 import org.misterej.engine.components.SpriteRenderer;
 import org.misterej.engine.util.AssetPool;
-import org.misterej.engine.util.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -343,7 +341,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
     }
 
     @Override
-    public int compareTo(@NotNull RenderBatch o)
+    public int compareTo(RenderBatch o)
     {
         return Integer.compare(getZIndex(), o.getZIndex());
     }

@@ -10,6 +10,7 @@ import org.misterej.engine.imgui.ImGuiLayer;
 import org.misterej.engine.renderer.DebugDraw;
 import org.misterej.engine.util.Logger;
 import org.misterej.engine.util.Time;
+import org.misterej.game.CODE.CodeScene;
 
 
 import java.nio.IntBuffer;
@@ -21,6 +22,8 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.opengl.GL33.*;
 
 public class Window {
+
+    public static volatile boolean shoudlClose = false;
 
     private Window(String name)
     {
@@ -107,7 +110,7 @@ public class Window {
 
         if(SceneManager.getCurrentScene() == null)
         {
-            SceneManager.setScene(new LevelEditor());
+            SceneManager.setScene(new CodeScene("assets/levels/cod1.csv"));
         }
 
         while(!glfwWindowShouldClose(window))
@@ -150,6 +153,7 @@ public class Window {
 
     private void close()
     {
+        shoudlClose = true;
         imguilayer.dispose();
 
         glfwFreeCallbacks(window);

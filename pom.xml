@@ -154,10 +154,9 @@
             <classifier>${lwjgl.natives}</classifier>
         </dependency>
         <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
+            <groupId>org.python</groupId>
+            <artifactId>jython-standalone</artifactId>
+            <version>2.7.2</version>
         </dependency>
     </dependencies>
 

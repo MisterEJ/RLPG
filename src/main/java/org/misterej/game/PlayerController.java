@@ -1,26 +1,18 @@
 package org.misterej.game;
 
 
-import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.contacts.Contact;
 import org.joml.Vector2f;
 
 import org.lwjgl.glfw.GLFW;
 import org.misterej.engine.*;
 import org.misterej.engine.components.*;
-import org.misterej.engine.physics2d.Physics2D;
-import org.misterej.engine.physics2d.RaycastInfo;
 import org.misterej.engine.physics2d.components.FloorCollider;
 import org.misterej.engine.physics2d.components.RigidBody2D;
-import org.misterej.engine.renderer.DebugDraw;
+import org.misterej.engine.renderer.Color;
 import org.misterej.engine.util.AssetPool;
 import org.misterej.engine.util.JMath;
-
-import java.awt.*;
 
 
 public class PlayerController extends Script {
@@ -31,11 +23,13 @@ public class PlayerController extends Script {
     enum State
     {
         IDLE,
+        FINISH,
         ALIVE,
         DEAD
     }
 
     private Camera camera;
+    private Scene scene;
     private SpriteRenderer spr;
     private RigidBody2D rb;
     private AnimationPlayer animationPlayer;
@@ -81,6 +75,12 @@ public class PlayerController extends Script {
                     state = State.IDLE;
                 }
             }
+        } else if(state == State.FINISH)
+        {
+            GameObject black = new GameObject("Black", new Transform(new Vector2f(scene.getCamera().position), new Vector2f(scene.getCamera().getViewPort())));
+            SpriteRenderer spr = new SpriteRenderer(Color.Black);
+            black.addComponent(spr);
+            //SceneManager.getCurrentScene().addGameObject(black);
         }
 
         camera.position.x = gameObject.getTransform().position.x - (camera.getViewPort().x / 2f) + (gameObject.getTransform().size.x / 2f);
@@ -172,6 +172,12 @@ public class PlayerController extends Script {
             {
                 contacts++;
             }
+
+            System.out.println(go.getComponent(SpriteRenderer.class).getSprite().getId());
+            if(go.getComponent(SpriteRenderer.class).getSprite().getId() == 81)
+            {
+                state = State.FINISH;
+            }
         }
     }
 
@@ -191,6 +197,7 @@ public class PlayerController extends Script {
     @Override
     public void start() {
         camera = SceneManager.getCurrentScene().getCamera();
+        scene = SceneManager.getCurrentScene();
         startingPosition = new Vector2f(gameObject.getPosition());
         lastPosition = new Vector2f(startingPosition);
 

@@ -15,6 +15,15 @@ public class Animation {
     private Timer timer = new Timer(1f/12f);
     private boolean loop;
 
+    public Animation(String name, SpriteSheet spriteSheet, boolean loop, int[] frames)
+    {
+        this.loop = loop;
+        this.name = name;
+        this.frames = new ArrayList<>();
+        this.spriteSheet = spriteSheet;
+        addFrames(frames);
+    }
+
     public Animation(String name, SpriteSheet spriteSheet, boolean loop)
     {
         this.loop = loop;

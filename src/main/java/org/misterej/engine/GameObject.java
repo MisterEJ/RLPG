@@ -1,6 +1,5 @@
 package org.misterej.engine;
 
-import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.misterej.engine.components.SpriteRenderer;
 
@@ -213,7 +212,7 @@ public class GameObject implements Comparable<GameObject>{
     }
 
     @Override
-    public int compareTo(@NotNull GameObject o) {
+    public int compareTo(GameObject o) {
         return Float.compare(this.transform.position.x, o.transform.position.x);
     }
 }

@@ -1,7 +1,6 @@
 package org.misterej.game;
 
 import org.joml.Vector2f;
-import org.lwjgl.glfw.GLFW;
 import org.misterej.engine.*;
 import org.misterej.engine.components.SpriteRenderer;
 import org.misterej.engine.components.SpriteSheet;
@@ -9,16 +8,13 @@ import org.misterej.engine.util.AssetPool;
 
 public class MainMenu extends Scene {
 
+    public MainMenu(String level) {
+        super(level);
+    }
+
     @Override
     public void update(float deltaTime) {
-
-        for(GameObject go : this.gameObjects)
-        {
-            go.update(deltaTime);
-        }
-
-        this.physics2D.update(deltaTime);
-        this.renderer.render();
+        super.update(deltaTime);
     }
 
     @Override

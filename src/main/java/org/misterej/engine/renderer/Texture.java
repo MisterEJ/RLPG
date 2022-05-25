@@ -8,7 +8,6 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.stb.STBImage.*;
-import static org.lwjgl.stb.STBImageWrite.*;
 
 import static org.lwjgl.opengl.GL33.*;
 

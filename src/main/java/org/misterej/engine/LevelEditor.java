@@ -8,13 +8,12 @@ import org.misterej.engine.components.ScriptComponent;
 import org.misterej.engine.components.Sprite;
 import org.misterej.engine.components.SpriteRenderer;
 import org.misterej.engine.components.SpriteSheet;
-import org.misterej.engine.imgui.ImGuiLayer;
 import org.misterej.engine.renderer.DebugDraw;
 import org.misterej.engine.util.AssetPool;
 import org.misterej.engine.scripts.TilePosScript;
-import org.misterej.game.GameScene;
+import org.misterej.game.CODE.CodeScene;
 
-import java.util.ArrayList;
+// TODO REWRITE TILE SELECTION
 
 public class LevelEditor extends Scene{
 
@@ -23,30 +22,22 @@ public class LevelEditor extends Scene{
     private int selectedSpriteID = -1;
     private GameObject selectionObject;
     private GameObject selectedObject;
-    private String levelName;
 
     public LevelEditor(String level)
     {
-        this.levelName = level;
+        super(level);
     }
-
-    public LevelEditor(){}
 
     @Override
     public void update(float deltaTime) {
 
+        super.update(deltaTime);
         //DebugLines
         for(int i = -50; i < 1000; i++)
         {
             DebugDraw.addLine2D(new Vector2f(-100000,i * tilemap.getCellHeight()), new Vector2f(100000, i * tilemap.getCellHeight()));
             DebugDraw.addLine2D(new Vector2f(i * tilemap.getCellWidth(),100000), new Vector2f(i * tilemap.getCellWidth(), -100000));
         }
-
-        for(GameObject go : gameObjects)
-        {
-            go.update(deltaTime);
-        }
-        renderer.render();
         input();
 
         if(selectedSpriteID != -1)
@@ -79,12 +70,12 @@ public class LevelEditor extends Scene{
 
         camera.setViewPort(camera.getViewPort().mul(2));
 
-        SpriteSheet spriteSheet = AssetPool.getSpriteSheet("assets/textures/DeepForestTileset.png");
+        SpriteSheet spriteSheet = AssetPool.getSpriteSheet("assets/textures/codesprites.png");
         tilemap = new Tilemap(1f,1f, spriteSheet);
 
-        if(levelName != null)
+        if(level != null)
         {
-            tilemap.load(levelName);
+            tilemap.load(level);
             this.addTilemap(tilemap);
         }
 
@@ -98,7 +89,7 @@ public class LevelEditor extends Scene{
 
     ImString filename = new ImString();
     ImString filename2 = new ImString();
-    ImString level = new ImString();
+    ImString levelName = new ImString();
     @Override
     public void imgui()
     {
@@ -146,29 +137,29 @@ public class LevelEditor extends Scene{
             tilemap.removeAllTiles();
         }
 
-        ImGui.inputText("Level to play:", level);
+        ImGui.inputText("Level to play:", levelName);
         if(ImGui.button("Play"))
         {
-            if(!level.get().isEmpty())
+            if(!levelName.get().isEmpty())
             {
                 String filepath = "assets/levels/";
-                if(!level.get().endsWith(".csv"))
+                if(!levelName.get().endsWith(".csv"))
                 {
-                    filepath += level.get() + ".csv";
+                    filepath += levelName.get() + ".csv";
                 }
                 else
                 {
-                    filepath += level.get();
+                    filepath += levelName.get();
                 }
 
-                SceneManager.setScene(new GameScene(filepath));
+                SceneManager.setScene(new CodeScene(filepath));
             }
         }
 
         ImGui.end();
 
         float scale = 3;
-        SpriteSheet spriteSheet = AssetPool.getSpriteSheet("assets/textures/DeepForestTileset.png");
+        SpriteSheet spriteSheet = AssetPool.getSpriteSheet("assets/textures/codesprites.png");
 
         ImGui.begin("Tiles");
 
@@ -178,7 +169,7 @@ public class LevelEditor extends Scene{
             Vector2f[] UV = sprite.getTexCoords();
 
             ImGui.pushID(i);
-            if(ImGui.imageButton(sprite.getTexID(), sprite.getWidth() * scale, sprite.getHeight() * scale, UV[0].x, UV[0].y, UV[2].x, UV[2].y))
+            if(ImGui.imageButton(sprite.getTexID(), sprite.getWidth() * scale, sprite.getHeight() * scale, UV[2].x, UV[0].y, UV[0].x, UV[2].y))
             {
                 selectedSpriteID = i;
             }
@@ -194,7 +185,7 @@ public class LevelEditor extends Scene{
     private void input()
     {
         // Drag camera
-        if(Input.MouseListener.isMouseButtonDown(2))
+        if(Input.MouseListener.isMouseButtonDown(2) || Input.KeyboardListener.isKeyDown(GLFW.GLFW_KEY_LEFT_ALT))
         {
             camera.position.x += Input.MouseListener.getDx() * camera.getViewPort().x * 0.001;
             camera.position.y -= Input.MouseListener.getDy() * camera.getViewPort().x * 0.001;
@@ -246,7 +237,11 @@ public class LevelEditor extends Scene{
         AssetPool.getShader("assets/shaders/default.glsl");
 
         AssetPool.addSpriteSheet("assets/textures/DeepForestTileset.png", new SpriteSheet(
-                AssetPool.getTexture("assets/textures/DeepForestTileset.png"), 16, 16, 80, 0
+                AssetPool.getTexture("assets/textures/DeepForestTileset.png"), 16, 16, 82, 0
+        ));
+
+        AssetPool.addSpriteSheet("assets/textures/codesprites.png", new SpriteSheet(
+                AssetPool.getTexture("assets/textures/codesprites.png"), 16, 16, 24, 0
         ));
 
         AssetPool.addSpriteSheet("assets/textures/MiniCavalierMan.png", new SpriteSheet(
